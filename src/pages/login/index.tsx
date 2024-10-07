@@ -1,4 +1,5 @@
 import {
+  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -7,6 +8,7 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import normalize from 'react-native-normalize';
+import { COLOR } from '../../utils/color';
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -15,10 +17,14 @@ export default function Login() {
     <View>
       <View
         style={{
-          backgroundColor: '#4bba4e',
           width: '100%',
-          height: normalize(450),
-        }}></View>
+          height: normalize(450)
+        }}>
+        <Image
+          source={require('../../assets/images/login.jpg')}
+          style={{width: '100%', height: normalize(450)}}
+        />
+      </View>
       {isLogin && (
         <View style={{paddingHorizontal: normalize(50)}}>
           <View
@@ -88,13 +94,13 @@ export default function Login() {
               marginTop: normalize(20),
             }}>
             <TextInput
-              placeholder="Kode Referral"
+              placeholder="Kode Referral (Jika Ada)"
               style={{paddingLeft: normalize(20), height: normalize(40)}}
             />
           </View>
           <TouchableOpacity
             style={{
-              backgroundColor: '#4bba4e',
+              backgroundColor:COLOR.default,
               height: normalize(35),
               width: '100%',
               borderRadius: 20,
@@ -124,12 +130,11 @@ export default function Login() {
             <Text
               style={{
                 textDecorationStyle: 'solid',
-                textDecorationLine: 'underline'
+                textDecorationLine: 'underline',
               }}>
-              Ketentuan Penggunaan dan
+              Ketentuan Pengguna dan
             </Text>
-          </TouchableOpacity>
-          {" "}
+          </TouchableOpacity>{' '}
           <TouchableOpacity>
             <Text
               style={{
