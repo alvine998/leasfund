@@ -1,12 +1,18 @@
 import {Animated, Easing, Image, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useRef} from 'react';
 import normalize from 'react-native-normalize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Splash({navigation}: any) {
   const spinValue = useRef(new Animated.Value(0)).current; // Create animated value
 
   useEffect(() => {
     // Create an infinite spinning animation
+    let data: any = null;
+    const getData = async () => {
+      data = await AsyncStorage.getItem('login');
+    };
+    getData();
     const spinAnimation = Animated.loop(
       Animated.timing(spinValue, {
         toValue: 1,
@@ -20,7 +26,13 @@ export default function Splash({navigation}: any) {
 
     setTimeout(() => {
       spinAnimation.stop();
-      navigation.navigate('Home')
+      if (!data) {
+        return navigation.navigate('Intro');
+      }
+      if (!JSON.parse(data)?.otp) {
+        return navigation.navigate('Login');
+      }
+      navigation.navigate('Home');
     }, 3000);
   }, [spinValue]);
 

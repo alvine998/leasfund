@@ -2,6 +2,8 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 import Home from '../pages/home';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5'
+import Card from '../pages/card';
+import Account from '../pages/account';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +34,7 @@ export default function BottomTabs() {
       />
        <Tab.Screen
         name="BottomCard"
-        component={Home}
+        component={Card}
         options={{
           tabBarLabel: 'Kartu',
           tabBarIcon: ({color, size}) => (
@@ -52,7 +54,7 @@ export default function BottomTabs() {
       />
       <Tab.Screen
         name="BottomAccount"
-        component={Home}
+        component={Account}
         options={{
           tabBarLabel: 'Akun',
           tabBarIcon: ({color, size}) => (

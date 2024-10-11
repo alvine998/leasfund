@@ -35,7 +35,7 @@ const FadeInView: React.FC<FadeInViewProps> = props => {
   );
 };
 
-export default function Intro() {
+export default function Intro({navigation}: any) {
   const [page, setPage] = useState<number>(0);
   const screenWidth = Dimensions.get('window').width;
   const data = [
@@ -96,10 +96,17 @@ export default function Intro() {
           {data[page].image && (
             <Image
               source={data[page].image}
-              style={{width: normalize(250), height: normalize(page == 1 ? 250 : 200)}}
+              style={{
+                width: normalize(250),
+                height: normalize(page == 1 ? 250 : 200),
+              }}
             />
           )}
-          <View style={{paddingHorizontal: normalize(20), marginTop:normalize(20)}}>
+          <View
+            style={{
+              paddingHorizontal: normalize(20),
+              marginTop: normalize(20),
+            }}>
             <Text style={styles.title}>{data[page]?.text}</Text>
           </View>
         </FadeInView>
@@ -113,7 +120,15 @@ export default function Intro() {
           <View></View>
         )}
 
-        <TouchableOpacity style={styles.circleButton} onPress={nextSlide}>
+        <TouchableOpacity
+          style={styles.circleButton}
+          onPress={
+            page == data.length
+              ? () => {
+                  navigation.navigate('Login');
+                }
+              : nextSlide
+          }>
           <Text style={styles.iconize}>{'>'}</Text>
         </TouchableOpacity>
       </View>
