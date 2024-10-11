@@ -123,7 +123,7 @@ export default function Intro({navigation}: any) {
         <TouchableOpacity
           style={styles.circleButton}
           onPress={
-            page == data.length
+            page == (data.length - 1)
               ? () => {
                   navigation.navigate('Login');
                 }
@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: "white"
   },
   title: {
     fontSize: normalize(18),

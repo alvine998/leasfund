@@ -6,11 +6,22 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import normalize from 'react-native-normalize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Card() {
   const [refresh, setRefresh] = useState<boolean>(false);
+  const [detail, setDetail] = useState<any>(null);
+
+  const getData = async () => {
+    const register: any = await AsyncStorage.getItem('register');
+    setDetail(JSON.parse(register));
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   const onRefresh = () => {
     setRefresh(true);
@@ -49,7 +60,7 @@ export default function Card() {
             width: normalize(350),
             height: normalize(200),
             borderRadius: 20,
-            marginTop: normalize(20),
+            marginTop: normalize(30),
           }}
         />
         <View style={{marginTop: normalize(-185)}}>
@@ -61,7 +72,7 @@ export default function Card() {
               color: 'black',
               marginLeft: normalize(150),
             }}>
-            Adrian Septian
+            {detail?.name || 'Adrian Septian'}
           </Text>
         </View>
         <View style={{marginLeft: normalize(50), marginTop: normalize(25)}}>
@@ -70,22 +81,22 @@ export default function Card() {
               fontSize: normalize(12),
               fontWeight: '500',
               color: 'black',
-              marginLeft: normalize(160),
+              marginLeft: normalize(150),
             }}>
-            0899-9999-0000
+            {detail?.phone || '089900009999'}
           </Text>
           <Text
             style={{
-              fontSize: normalize(12),
+              fontSize: normalize(detail?.email?.length > 20 ? 10 : 12),
               fontWeight: '500',
               color: 'black',
-              marginLeft: normalize(160),
+              marginLeft: normalize(150),
               marginTop: normalize(17),
             }}>
-            adrianseptian@gmail.com
+            {detail?.email || 'adrianseptian@gmail.com'}
           </Text>
         </View>
-        <View style={{marginLeft: normalize(-182), marginTop: normalize(-5)}}>
+        <View style={{marginLeft: normalize(-182), marginTop: normalize(-3)}}>
           <Image
             source={{
               uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/Untitled%201%20(1).png?alt=media&token=650e4bcc-a605-4af3-a705-9fed3b8a80e0',

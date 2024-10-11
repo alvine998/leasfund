@@ -15,10 +15,13 @@ export default function ConfirmOTP({navigation}: any) {
   const [otp, setOtp] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [detail, setDetail] = useState<any>(null);
+  const [login, setLogin] = useState<any>(null);
 
   const getData = async () => {
     const register: any = await AsyncStorage.getItem('register');
+    const login: any = await AsyncStorage.getItem('login');
     setDetail(JSON.parse(register));
+    setLogin(JSON.parse(login));
   };
 
   useEffect(() => {
@@ -30,6 +33,10 @@ export default function ConfirmOTP({navigation}: any) {
       if (detail?.otp !== otp) {
         return setErrorMessage('Kode OTP Salah');
       }
+      await AsyncStorage.setItem(
+        'login',
+        JSON.stringify({...login, otp: detail?.otp}),
+      );
       Alert.alert(`Selamat Datang`);
       navigation.navigate('Home');
     } catch (error) {

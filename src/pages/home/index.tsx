@@ -1,19 +1,37 @@
 import {
+  Alert,
   Image,
+  Modal,
+  Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import normalize from 'react-native-normalize';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 import FA5IconPro from 'react-native-vector-icons/FontAwesome5Pro';
 import {COLOR} from '../../utils/color';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Home() {
+export default function Home({navigation}: any) {
+  const [detail, setDetail] = useState<any>(null);
+  const [name, setName] = useState<string>('');
+  const [alert, setAlert] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const getData = async () => {
+    const register: any = await AsyncStorage.getItem('register');
+    setDetail(JSON.parse(register));
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
   const navs = [
     {
       name: 'Pelajari Produk',
@@ -47,7 +65,31 @@ export default function Home() {
     },
   ];
 
+  const onAddName = async () => {
+    try {
+      if (!name) {
+        return setErrorMessage('Harap lengkapi nama anda');
+      }
+      await AsyncStorage.setItem(
+        'register',
+        JSON.stringify({...detail, name: name}),
+      );
+      Alert.alert('Berhasil menambahkan nama');
+      setModal(!modal);
+      getData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const [refresh, setRefresh] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>();
+
+  useEffect(() => {
+    if (!detail?.name) {
+      setModal(true);
+    }
+  }, []);
 
   const onRefresh = () => {
     setRefresh(true);
@@ -69,7 +111,9 @@ export default function Home() {
               color={COLOR.blue}
             />
           </TouchableOpacity>
-          <Text style={styles.name}>Halo, User Leasfund</Text>
+          <Text style={styles.name}>
+            Halo, {detail?.name || 'User Leasfund'}
+          </Text>
         </View>
         <TouchableOpacity>
           <FA5Icon name="bell" size={normalize(30)} color={COLOR.blue} />
@@ -173,6 +217,52 @@ export default function Home() {
           <Text style={styles.textBoxHelp}>Customer Service</Text>
         </TouchableOpacity>
       </View>
+      {modal && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modal}
+          onRequestClose={() => {
+            setModal(!modal);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                Selamat Datang, Mohon isi nama lengkap anda terlebih dahulu!
+              </Text>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 20,
+                  marginTop: normalize(30),
+                  width: '100%',
+                }}>
+                <TextInput
+                  placeholder="Nama Lengkap"
+                  value={name}
+                  style={{paddingLeft: normalize(20), height: normalize(40)}}
+                  onChangeText={e => setName(e)}
+                />
+              </View>
+              {errorMessage && (
+                <Text
+                  style={{
+                    color: COLOR.red,
+                    marginLeft: normalize(20),
+                    textAlign: 'left',
+                  }}>
+                  {errorMessage}
+                </Text>
+              )}
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={onAddName}>
+                <Text style={styles.textStyle}>Simpan</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      )}
     </ScrollView>
   );
 }
@@ -273,5 +363,52 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     marginLeft: normalize(10),
+  },
+
+  centeredView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: normalize(22),
+    paddingHorizontal: normalize(20),
+    flex: 1,
+  },
+  modalView: {
+    margin: normalize(20),
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: normalize(35),
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: '100%',
+    opacity: 30,
+  },
+  button: {
+    borderRadius: 20,
+    padding: normalize(10),
+    elevation: 2,
+    width: '100%',
+    marginTop: normalize(20),
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: normalize(15),
+    textAlign: 'center',
   },
 });

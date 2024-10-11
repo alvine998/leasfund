@@ -1,13 +1,14 @@
 import {
   Alert,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import normalize from 'react-native-normalize';
 import {COLOR} from '../../utils/color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +24,10 @@ export default function Login({navigation}: any) {
     {value: 'email', label: 'Email', required: true},
     {value: 'referral_code', label: 'Kode Referal', required: false},
   ];
+
+  useEffect(() => {
+    setData(null);
+  }, []);
 
   const onLogin = async () => {
     try {
@@ -64,7 +69,7 @@ export default function Login({navigation}: any) {
   };
 
   return (
-    <View>
+    <ScrollView>
       <View
         style={{
           width: '100%',
@@ -76,7 +81,8 @@ export default function Login({navigation}: any) {
         />
       </View>
       {isLogin && (
-        <View style={{paddingHorizontal: normalize(50)}}>
+        <View
+          style={{paddingHorizontal: normalize(50), backgroundColor: 'white'}}>
           <View
             style={{
               borderWidth: 1,
@@ -86,7 +92,12 @@ export default function Login({navigation}: any) {
             <TextInput
               placeholder="No Telepon"
               value={data?.phone}
-              style={{paddingLeft: normalize(20), height: normalize(40)}}
+              style={{
+                paddingLeft: normalize(20),
+                height: normalize(40),
+                color: COLOR.darkGrey,
+              }}
+              placeholderTextColor={COLOR.darkGrey}
               onChangeText={e => setData({phone: e})}
             />
           </View>
@@ -120,13 +131,16 @@ export default function Login({navigation}: any) {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text>Belum memiliki akun? Daftar disini</Text>
+            <Text style={{color: 'black'}}>
+              Belum memiliki akun? Daftar disini
+            </Text>
           </TouchableOpacity>
         </View>
       )}
 
       {!isLogin && (
-        <View style={{paddingHorizontal: normalize(50)}}>
+        <View
+          style={{paddingHorizontal: normalize(50), backgroundColor: 'white'}}>
           <View
             style={{
               borderWidth: 1,
@@ -139,7 +153,12 @@ export default function Login({navigation}: any) {
               onChangeText={e => {
                 setData({...data, phone: e});
               }}
-              style={{paddingLeft: normalize(20), height: normalize(40)}}
+              style={{
+                paddingLeft: normalize(20),
+                height: normalize(40),
+                color: COLOR.darkGrey,
+              }}
+              placeholderTextColor={COLOR.darkGrey}
             />
           </View>
           <View
@@ -154,7 +173,12 @@ export default function Login({navigation}: any) {
               onChangeText={e => {
                 setData({...data, email: e});
               }}
-              style={{paddingLeft: normalize(20), height: normalize(40)}}
+              style={{
+                paddingLeft: normalize(20),
+                height: normalize(40),
+                color: COLOR.darkGrey,
+              }}
+              placeholderTextColor={COLOR.darkGrey}
             />
           </View>
           <View
@@ -169,7 +193,12 @@ export default function Login({navigation}: any) {
               onChangeText={e => {
                 setData({...data, referral_code: e});
               }}
-              style={{paddingLeft: normalize(20), height: normalize(40)}}
+              style={{
+                paddingLeft: normalize(20),
+                height: normalize(40),
+                color: COLOR.darkGrey,
+              }}
+              placeholderTextColor={COLOR.darkGrey}
             />
           </View>
           {errorMessage && (
@@ -202,19 +231,22 @@ export default function Login({navigation}: any) {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text>Sudah memiliki akun? Masuk disini</Text>
+            <Text style={{color: 'black'}}>
+              Sudah memiliki akun? Masuk disini
+            </Text>
           </TouchableOpacity>
         </View>
       )}
 
       <View style={{marginTop: normalize(20)}}>
-        <Text style={{textAlign: 'center'}}>
+        <Text style={{textAlign: 'center', color: 'black'}}>
           Dengan melanjutkan, kamu setuju dengan{' '}
           <TouchableOpacity>
             <Text
               style={{
                 textDecorationStyle: 'solid',
                 textDecorationLine: 'underline',
+                color: 'black',
               }}>
               Ketentuan Pengguna dan
             </Text>
@@ -224,13 +256,14 @@ export default function Login({navigation}: any) {
               style={{
                 textDecorationStyle: 'solid',
                 textDecorationLine: 'underline',
+                color: 'black',
               }}>
               Kebijakan Privasi
             </Text>
           </TouchableOpacity>
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
