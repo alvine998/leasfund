@@ -4,6 +4,7 @@ import Home from '../pages/home';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5'
 import Card from '../pages/card';
 import Account from '../pages/account';
+import Product from '../pages/product';
 
 const Tab = createBottomTabNavigator();
 
@@ -23,8 +24,8 @@ export default function BottomTabs() {
         }}
       />
        <Tab.Screen
-        name="BottomProduct"
-        component={Home}
+        name="Product"
+        component={Product}
         options={{
           tabBarLabel: 'Produk',
           tabBarIcon: ({color, size}) => (

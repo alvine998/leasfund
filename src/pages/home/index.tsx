@@ -23,10 +23,26 @@ export default function Home({navigation}: any) {
   const [name, setName] = useState<string>('');
   const [alert, setAlert] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [images, setImages] = useState<any>([]);
+  const [show, setShow] = useState<boolean>(false);
+
+  // useEffect(() => {
+  //   storage()
+  //     .ref('/' + 'FA984B65-38D4-44B1-BF02-4E7EF089773B.jpg') //name in storage in firebase console
+  //     .getDownloadURL()
+  //     .then((url) => {
+  //       setImageUrl(url);
+  //     })
+  //     .catch((e) => console.log('Errors while downloading => ', e));
+  // }, []);
 
   const getData = async () => {
     const register: any = await AsyncStorage.getItem('register');
-    setDetail(JSON.parse(register));
+    const detail = JSON.parse(register);
+    setDetail(detail);
+    if (!detail?.name || detail?.name == '') {
+      setModal(true);
+    }
   };
 
   useEffect(() => {
@@ -34,33 +50,23 @@ export default function Home({navigation}: any) {
   }, []);
   const navs = [
     {
-      name: 'Pelajari Produk',
-      icon: 'book-open',
-      href: '',
-    },
-    {
-      name: 'Cari Nasabah',
-      icon: 'search',
-      href: '',
-    },
-    {
       name: 'Kelola Nasabah',
-      icon: 'users',
+      icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/customer-service_9759890.png?alt=media&token=37ba0011-64bb-41df-9ae9-4f6e26d5b9b2',
       href: '',
     },
     {
-      name: 'Member Tim',
-      icon: 'user-friends',
+      name: 'Member',
+      icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/teamwork_3908526.png?alt=media&token=20475e80-410d-48be-8b93-3faecee87afa',
       href: '',
     },
     {
-      name: 'Pendapatan & Poin',
-      icon: 'dollar-sign',
+      name: 'Poin & Komisi',
+      icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/interest_3636104.png?alt=media&token=be08d4f8-9e2d-4f37-afec-a05ee79f7eef',
       href: '',
     },
     {
       name: 'Simulasi Cicilan',
-      icon: 'clipboard',
+      icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/maths_766430.png?alt=media&token=4d80fc48-c44c-441c-9db6-f438f8afe650',
       href: '',
     },
   ];
@@ -84,12 +90,6 @@ export default function Home({navigation}: any) {
 
   const [refresh, setRefresh] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>();
-
-  useEffect(() => {
-    if (!detail?.name) {
-      setModal(true);
-    }
-  }, []);
 
   const onRefresh = () => {
     setRefresh(true);
@@ -120,48 +120,100 @@ export default function Home({navigation}: any) {
         </TouchableOpacity>
       </View>
 
+      <View
+        style={{
+          backgroundColor: COLOR.blue,
+          height: normalize(250),
+          borderBottomRightRadius: 50,
+        }}></View>
+
+      <View
+        style={{
+          marginTop: normalize(-230),
+          marginBottom: normalize(20),
+          paddingHorizontal: normalize(20),
+        }}>
+        <View
+          style={{
+            backgroundColor: 'white',
+            width: '100%',
+            height: normalize(50),
+            padding: normalize(10),
+            borderRadius: 20,
+            flexDirection: 'row',
+            gap: normalize(20),
+            alignItems: 'center',
+            paddingLeft: normalize(20),
+          }}>
+          <FA5Icon name="search" size={normalize(20)} />
+          <TextInput
+            placeholder="Cari Nasabah"
+            style={{width: normalize(200), height: normalize(40)}}
+          />
+        </View>
+      </View>
+
+      <View style={{paddingHorizontal: normalize(20)}}>
+        <View style={styles.boxBlue}>
+          <Text style={{color: 'white'}}>Total Komisi</Text>
+          <View style={styles.row2}>
+            <Text style={styles.text1}>
+              Rp {show ? '1.000.000' : '********'}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setShow(!show);
+              }}>
+              <FA5Icon
+                name={show ? 'eye' : 'eye-slash'}
+                size={normalize(20)}
+                color={'white'}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
       <View style={styles.container}>
-        <Text style={{fontSize: normalize(20), color: 'black'}}>
-          Special Event
-        </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{marginTop: normalize(10)}}>
-          <TouchableOpacity style={styles.boxEvent}>
+        <ScrollView horizontal pagingEnabled style={{marginTop: normalize(10)}}>
+          <TouchableOpacity
+            style={[styles.boxEvent, {marginLeft: normalize(10)}]}>
             <Image
               source={{
-                uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/1600w-H2FBCwE-Os0.webp?alt=media&token=44a21f4e-cbde-4b66-a82d-af8f610d476c',
+                uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FA.jpg?alt=media&token=8561e991-b7ee-4f5c-8df2-49f0bfee438e',
               }}
               style={{
-                width: normalize(150),
-                height: normalize(150),
+                width: normalize(340),
+                height: normalize(170),
                 borderRadius: 20,
               }}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.boxEvent, {marginLeft: normalize(10)}]}>
+            style={[styles.boxEvent, {marginLeft: normalize(20)}]}>
             <Image
               source={{
-                uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/1600w-H2FBCwE-Os0.webp?alt=media&token=44a21f4e-cbde-4b66-a82d-af8f610d476c',
+                uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FB.jpg?alt=media&token=3e192d99-74d0-4b16-b5c9-1282fe1b247f',
               }}
               style={{
-                width: normalize(150),
-                height: normalize(150),
+                width: normalize(340),
+                height: normalize(170),
                 borderRadius: 20,
               }}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.boxEvent, {marginLeft: normalize(10)}]}>
+            style={[
+              styles.boxEvent,
+              {marginLeft: normalize(20), marginRight: normalize(10)},
+            ]}>
             <Image
               source={{
-                uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/1600w-H2FBCwE-Os0.webp?alt=media&token=44a21f4e-cbde-4b66-a82d-af8f610d476c',
+                uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FSAMPUL%205.jpg?alt=media&token=84c20ac7-aea4-47b4-8b03-ca986411174f',
               }}
               style={{
-                width: normalize(150),
-                height: normalize(150),
+                width: normalize(340),
+                height: normalize(170),
                 borderRadius: 20,
               }}
             />
@@ -169,50 +221,42 @@ export default function Home({navigation}: any) {
         </ScrollView>
       </View>
 
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.boxBlue}>
-          <View style={styles.row2}>
-            <Text style={styles.text1}>Total Pendapatan</Text>
-            <FA5Icon
-              name="chevron-right"
-              size={normalize(20)}
-              color={'white'}
-            />
-          </View>
-          <Text style={styles.text2}>Rp 0</Text>
-        </TouchableOpacity>
-
+      <View style={{paddingHorizontal: normalize(20)}}>
         <View style={styles.row3}>
           {navs?.map((val: any, idx: number) => (
-            <TouchableOpacity key={idx} style={styles.boxNav}>
-              <FA5Icon
-                name={val?.icon}
-                size={normalize(30)}
-                color={'#808080'}
-              />
+            <View key={idx}>
+              <TouchableOpacity style={styles.boxNav}>
+                <Image
+                  source={{uri: val?.icon}}
+                  style={{width: normalize(50), height: normalize(50)}}
+                />
+              </TouchableOpacity>
               <Text style={styles.text3}>{val?.name}</Text>
-            </TouchableOpacity>
+            </View>
           ))}
         </View>
       </View>
 
-      <View style={{paddingHorizontal: normalize(20)}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: normalize(20),
+          paddingHorizontal: normalize(20),
+          justifyContent: 'center',
+        }}>
         <TouchableOpacity style={styles.boxHelp}>
           <FA5Icon
             name={'info-circle'}
             size={normalize(30)}
-            color={'#808080'}
+            color={COLOR.orange}
           />
-          <Text style={styles.textBoxHelp}>Q & A</Text>
+          <Text style={styles.textBoxHelp}>FAQ</Text>
         </TouchableOpacity>
-      </View>
-      <View
-        style={{paddingHorizontal: normalize(20), marginTop: normalize(20)}}>
         <TouchableOpacity style={styles.boxHelp}>
           <FA5Icon
             name={'hands-helping'}
             size={normalize(30)}
-            color={'#808080'}
+            color={COLOR.blue}
           />
           <Text style={styles.textBoxHelp}>Customer Service</Text>
         </TouchableOpacity>
@@ -293,17 +337,17 @@ const styles = StyleSheet.create({
   },
   boxEvent: {
     backgroundColor: COLOR.default,
-    width: normalize(150),
-    height: normalize(150),
+    width: normalize(340),
+    height: normalize(170),
     borderRadius: 20,
   },
   boxBlue: {
     backgroundColor: COLOR.default,
     width: '100%',
-    height: normalize(150),
-    borderRadius: 20,
+    height: normalize(70),
+    borderRadius: 10,
+    padding: normalize(10),
     paddingHorizontal: normalize(20),
-    paddingVertical: normalize(20),
   },
   text1: {
     fontSize: normalize(20),
@@ -322,19 +366,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   row3: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
     flexDirection: 'row',
-    flexWrap: 'wrap',
     marginTop: normalize(20),
+    gap: normalize(10),
   },
   boxNav: {
-    width: normalize(100),
-    height: normalize(100),
+    width: normalize(50),
+    height: normalize(50),
     borderRadius: 20,
     backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: COLOR.darkGrey,
     margin: normalize(10),
     alignItems: 'center',
     justifyContent: 'center',
@@ -342,12 +384,12 @@ const styles = StyleSheet.create({
   text3: {
     fontSize: normalize(14),
     fontWeight: '400',
-    color: '#808080',
+    color: COLOR.darkGrey,
     textAlign: 'center',
-    marginTop: normalize(10),
+    width: normalize(60)
   },
   boxHelp: {
-    width: '100%',
+    width: normalize(160),
     height: normalize(100),
     borderRadius: 20,
     backgroundColor: 'white',
@@ -356,6 +398,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderWidth: 1,
     borderColor: COLOR.darkGrey,
+    marginTop: normalize(20)
   },
   textBoxHelp: {
     fontSize: normalize(20),
@@ -363,6 +406,7 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     marginLeft: normalize(10),
+    width: normalize(100)
   },
 
   centeredView: {

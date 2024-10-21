@@ -1,12 +1,16 @@
 import {Animated, Easing, Image, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import normalize from 'react-native-normalize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Splash({navigation}: any) {
+  const [isLogo, setIsLogo] = useState<boolean>(true);
   const spinValue = useRef(new Animated.Value(0)).current; // Create animated value
 
   useEffect(() => {
+    setTimeout(() => {
+      setIsLogo(false);
+    }, 1500);
     // Create an infinite spinning animation
     let data: any = null;
     const getData = async () => {
@@ -43,15 +47,28 @@ export default function Splash({navigation}: any) {
   });
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Animated.Image
-        source={require('../../assets/images/logo_icon.png')}
-        style={{
-          width: normalize(200),
-          height: normalize(200),
-          transform: [{rotate: spin}],
-        }}
-      />
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+      }}>
+      {isLogo ? (
+        <Image
+          source={require('../../assets/images/logo_full.png')}
+          style={{width: normalize(300), height: normalize(200)}}
+        />
+      ) : (
+        <Animated.Image
+          source={require('../../assets/images/logo_icon.png')}
+          style={{
+            width: normalize(200),
+            height: normalize(200),
+            transform: [{rotate: spin}],
+          }}
+        />
+      )}
     </View>
   );
 }
