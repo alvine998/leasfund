@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   row3: {
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     alignItems: 'baseline',
     flexDirection: 'row',
     marginTop: normalize(20),
