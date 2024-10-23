@@ -1,10 +1,10 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import Home from '../pages/home';
+import Home from '../screens/home';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
-import Card from '../pages/card';
-import Account from '../pages/account';
-import Product from '../pages/product';
+import Card from '../screens/card';
+import Account from '../screens/account';
+import Product from '../screens/product';
 import {TouchableOpacity, View} from 'react-native';
 import {COLOR} from '../utils/color';
 

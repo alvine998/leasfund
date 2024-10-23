@@ -1,16 +1,16 @@
 import {View, Text} from 'react-native';
 import React from 'react';
-import Splash from './src/pages/splash';
-import Intro from './src/pages/intro';
-import Home from './src/pages/home';
-import Login from './src/pages/login';
+import Splash from './src/screens/splash';
+import Intro from './src/screens/intro';
+import Home from './src/screens/home';
+import Login from './src/screens/login';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import BottomTabs from './src/components/BottomTabs';
-import ConfirmOTP from './src/pages/confirmotp';
-import DetailProduct from './src/pages/product/detail';
-import FormSubmission from './src/pages/product/detail/form';
-import Card from './src/pages/card';
+import ConfirmOTP from './src/screens/confirmotp';
+import DetailProduct from './src/screens/product/detail';
+import FormSubmission from './src/screens/product/detail/form';
+import Card from './src/screens/card';
 
 const Stack = createNativeStackNavigator();
 
