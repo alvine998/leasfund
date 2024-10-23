@@ -9,6 +9,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import normalize from 'react-native-normalize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {COLOR} from '../../utils/color';
 
 export default function Card() {
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -41,7 +42,22 @@ export default function Card() {
           flex: 1,
           marginTop: normalize(50),
         }}>
-        <Image
+        <View
+          style={{
+            backgroundColor: COLOR.blue,
+            width: '100%',
+            height: normalize(100),
+            paddingVertical: normalize(20),
+            paddingHorizontal: normalize(20),
+          }}>
+          <Text style={{fontSize: normalize(24), fontWeight: 'bold', color:"white"}}>
+            Rendi Imam
+          </Text>
+          <Text style={{fontSize: normalize(24), fontWeight: 'bold', color:"white"}}>
+            Referral: ADGJ89
+          </Text>
+        </View>
+        {/* <Image
           source={{
             uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2Fwww.leasfund.com.png?alt=media&token=fdb0db5f-b510-4db1-aa47-707317ca5b97',
           }}
@@ -50,7 +66,7 @@ export default function Card() {
             height: normalize(200),
             borderRadius: 20,
           }}
-        />
+        /> */}
 
         <Image
           source={{

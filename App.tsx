@@ -9,6 +9,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import BottomTabs from './src/components/BottomTabs';
 import ConfirmOTP from './src/pages/confirmotp';
 import DetailProduct from './src/pages/product/detail';
+import FormSubmission from './src/pages/product/detail/form';
+import Card from './src/pages/card';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +20,8 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{headerShown: false}}>
+        <Stack.Screen name="FormSubmission" component={FormSubmission} />
+        <Stack.Screen name="Card" component={Card} />
         <Stack.Screen name="DetailProduct" component={DetailProduct} />
         <Stack.Screen name="Home" component={BottomTabs} />
         <Stack.Screen name="Login" component={Login} />

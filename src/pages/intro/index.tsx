@@ -2,6 +2,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import React, {PropsWithChildren, useEffect, useRef, useState} from 'react';
 import normalize from 'react-native-normalize';
+import {COLOR} from '../../utils/color';
 
 type FadeInViewProps = PropsWithChildren<{style: ViewStyle}>;
 
@@ -83,7 +85,37 @@ export default function Intro({navigation}: any) {
 
   return (
     <View style={styles.view}>
-      <View
+      <ScrollView horizontal pagingEnabled>
+        {data?.map((v: any, i: any) => (
+          <Image
+            key={i}
+            source={v.image}
+            style={{
+              width: screenWidth,
+              height: normalize(i == 1 ? 250 : 200),
+            }}
+          />
+        ))}
+      </ScrollView>
+      <View style={{flex: 1, paddingHorizontal: normalize(40), marginTop: normalize(-250)}}>
+        <TouchableOpacity
+        onPress={()=>{
+          navigation.navigate("Login")
+        }}
+          style={{
+            backgroundColor: COLOR.darkGreen,
+            paddingVertical: normalize(10),
+            paddingHorizontal: normalize(20),
+            height: normalize(50),
+            width: normalize(300),
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 10
+          }}>
+          <Text style={{color:"white", fontSize: normalize(20)}}>Lewati</Text>
+        </TouchableOpacity>
+      </View>
+      {/* <View
         style={{
           flexDirection: 'row',
         }}>
@@ -131,17 +163,19 @@ export default function Intro({navigation}: any) {
           }>
           <Text style={styles.iconize}>{'>'}</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   view: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: "white"
+    // flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    backgroundColor: 'white',
+    paddingTop: Dimensions.get('screen').height / 3,
+    height: Dimensions.get('screen').height,
   },
   title: {
     fontSize: normalize(18),

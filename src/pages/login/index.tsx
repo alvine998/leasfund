@@ -1,5 +1,6 @@
 import {
   Alert,
+  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
@@ -15,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({navigation}: any) {
   const [isLogin, setIsLogin] = useState<boolean>(false);
+  const heightScreen = Dimensions.get('screen').height;
 
   const [data, setData] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -69,78 +71,134 @@ export default function Login({navigation}: any) {
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={{backgroundColor: 'white'}}>
       <View
         style={{
           width: '100%',
-          height: normalize(450),
+          height: normalize(150),
+          backgroundColor: COLOR.darkGreen,
+          justifyContent: 'center',
+          alignItems: 'center',
         }}>
         <Image
-          source={require('../../assets/images/login.jpg')}
-          style={{width: '100%', height: normalize(450)}}
+          source={require('../../assets/images/logo_icon.png')}
+          style={{width: normalize(100), height: normalize(100)}}
         />
       </View>
       {isLogin && (
         <View
-          style={{paddingHorizontal: normalize(50), backgroundColor: 'white'}}>
+          style={{
+            backgroundColor: 'white',
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            elevation: 3,
+            marginTop: normalize(100),
+            height: heightScreen,
+          }}>
           <View
             style={{
-              borderWidth: 1,
-              borderRadius: 20,
-              marginTop: normalize(30),
+              paddingHorizontal: normalize(50),
             }}>
-            <TextInput
-              placeholder="No Telepon"
-              value={data?.phone}
+            <View
               style={{
-                paddingLeft: normalize(20),
-                height: normalize(40),
-                color: COLOR.darkGrey,
-              }}
-              placeholderTextColor={COLOR.darkGrey}
-              onChangeText={e => setData({phone: e})}
-            />
-          </View>
-          {errorMessage && (
-            <Text style={{color: COLOR.red, marginLeft: normalize(20)}}>
-              {errorMessage}
-            </Text>
-          )}
-          <TouchableOpacity
-            onPress={onLogin}
-            style={{
-              backgroundColor: '#4bba4e',
-              height: normalize(35),
-              width: '100%',
-              borderRadius: 20,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: normalize(20),
-            }}>
-            <Text style={{color: 'white'}}>Masuk</Text>
-          </TouchableOpacity>
+                borderWidth: 1,
+                borderRadius: 20,
+                marginTop: normalize(30),
+              }}>
+              <TextInput
+                placeholder="No Telepon"
+                value={data?.phone}
+                style={{
+                  paddingLeft: normalize(20),
+                  height: normalize(40),
+                  color: COLOR.darkGrey,
+                }}
+                placeholderTextColor={COLOR.darkGrey}
+                onChangeText={e => setData({phone: e})}
+              />
+            </View>
+            {errorMessage && (
+              <Text style={{color: COLOR.red, marginLeft: normalize(20)}}>
+                {errorMessage}
+              </Text>
+            )}
 
-          <TouchableOpacity
-            onPress={() => {
-              setIsLogin(false);
-              setData(null);
-              setErrorMessage('');
-            }}
+            <TouchableOpacity
+              onPress={() => {
+                setIsLogin(false);
+                setData(null);
+                setErrorMessage('');
+              }}
+              style={{
+                marginTop: normalize(20),
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text style={{color: 'black'}}>
+                Belum memiliki akun? Daftar disini
+              </Text>
+            </TouchableOpacity>
+
+            <View style={{marginTop: normalize(20)}}>
+              <Text style={{textAlign: 'center', color: 'black'}}>
+                Dengan melanjutkan, kamu setuju dengan{' '}
+                <TouchableOpacity>
+                  <Text
+                    style={{
+                      textDecorationStyle: 'solid',
+                      textDecorationLine: 'underline',
+                      color: 'black',
+                    }}>
+                    Ketentuan Pengguna dan
+                  </Text>
+                </TouchableOpacity>{' '}
+                <TouchableOpacity>
+                  <Text
+                    style={{
+                      textDecorationStyle: 'solid',
+                      textDecorationLine: 'underline',
+                      color: 'black',
+                    }}>
+                    Kebijakan Privasi
+                  </Text>
+                </TouchableOpacity>
+              </Text>
+            </View>
+          </View>
+          <View
             style={{
-              marginTop: normalize(20),
-              alignItems: 'center',
-              justifyContent: 'center',
+              paddingHorizontal: normalize(20),
+              marginTop: normalize(250),
             }}>
-            <Text style={{color: 'black'}}>
-              Belum memiliki akun? Daftar disini
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onLogin}
+              style={{
+                backgroundColor: '#4bba4e',
+                height: normalize(50),
+                width: '100%',
+                borderRadius: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text style={{color: 'white', fontSize: normalize(20)}}>
+                Masuk
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
       {!isLogin && (
         <View
-          style={{paddingHorizontal: normalize(50), backgroundColor: 'white'}}>
+          style={{
+            paddingHorizontal: normalize(50),
+            backgroundColor: 'white',
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            elevation: 3,
+            marginTop: normalize(20),
+            height: heightScreen,
+          }}>
           <View
             style={{
               borderWidth: 1,
@@ -150,6 +208,7 @@ export default function Login({navigation}: any) {
             <TextInput
               placeholder="No Telepon"
               value={data?.phone}
+              keyboardType='number-pad'
               onChangeText={e => {
                 setData({...data, phone: e});
               }}
@@ -235,34 +294,34 @@ export default function Login({navigation}: any) {
               Sudah memiliki akun? Masuk disini
             </Text>
           </TouchableOpacity>
+
+          <View style={{marginTop: normalize(20)}}>
+            <Text style={{textAlign: 'center', color: 'black'}}>
+              Dengan melanjutkan, kamu setuju dengan{' '}
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    textDecorationStyle: 'solid',
+                    textDecorationLine: 'underline',
+                    color: 'black',
+                  }}>
+                  Ketentuan Pengguna dan
+                </Text>
+              </TouchableOpacity>{' '}
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    textDecorationStyle: 'solid',
+                    textDecorationLine: 'underline',
+                    color: 'black',
+                  }}>
+                  Kebijakan Privasi
+                </Text>
+              </TouchableOpacity>
+            </Text>
+          </View>
         </View>
       )}
-
-      <View style={{marginTop: normalize(20)}}>
-        <Text style={{textAlign: 'center', color: 'black'}}>
-          Dengan melanjutkan, kamu setuju dengan{' '}
-          <TouchableOpacity>
-            <Text
-              style={{
-                textDecorationStyle: 'solid',
-                textDecorationLine: 'underline',
-                color: 'black',
-              }}>
-              Ketentuan Pengguna dan
-            </Text>
-          </TouchableOpacity>{' '}
-          <TouchableOpacity>
-            <Text
-              style={{
-                textDecorationStyle: 'solid',
-                textDecorationLine: 'underline',
-                color: 'black',
-              }}>
-              Kebijakan Privasi
-            </Text>
-          </TouchableOpacity>
-        </Text>
-      </View>
     </ScrollView>
   );
 }
