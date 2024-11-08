@@ -126,7 +126,7 @@ export default function Home({navigation}: any) {
     {
       name: 'Simulasi Cicilan',
       icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/maths_766430.png?alt=media&token=4d80fc48-c44c-441c-9db6-f438f8afe650',
-      href: '',
+      href: 'Simulation',
     },
   ];
 
@@ -334,7 +334,7 @@ export default function Home({navigation}: any) {
           }}>
           {navs?.map((val: any, idx: number) => (
             <View key={idx}>
-              <TouchableOpacity style={styles.boxNav}>
+              <TouchableOpacity style={styles.boxNav} onPress={()=>navigation.navigate(val?.href)}>
                 <Image
                   source={{uri: val?.icon}}
                   style={{width: normalize(50), height: normalize(50)}}
@@ -497,6 +497,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     marginTop: normalize(20),
+    elevation: 5
   },
   textBoxCard: {
     fontSize: normalize(20),

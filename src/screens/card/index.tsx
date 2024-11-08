@@ -112,7 +112,7 @@ export default function Card() {
             {detail?.email || 'adrianseptian@gmail.com'}
           </Text>
         </View>
-        <View style={{marginLeft: normalize(-182), marginTop: normalize(-3)}}>
+        <View style={{marginLeft: normalize(-183), marginTop: normalize(-1)}}>
           <Image
             source={{
               uri: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/Untitled%201%20(1).png?alt=media&token=650e4bcc-a605-4af3-a705-9fed3b8a80e0',

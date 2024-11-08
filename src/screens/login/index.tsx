@@ -91,9 +91,8 @@ export default function Login({navigation}: any) {
             backgroundColor: 'white',
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
-            elevation: 3,
+            elevation: 5,
             marginTop: normalize(100),
-            height: heightScreen,
           }}>
           <View
             style={{
@@ -195,9 +194,9 @@ export default function Login({navigation}: any) {
             backgroundColor: 'white',
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
-            elevation: 3,
+            elevation: 5,
             marginTop: normalize(20),
-            height: heightScreen,
+            flex:2,
           }}>
           <View
             style={{

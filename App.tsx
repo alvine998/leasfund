@@ -11,6 +11,7 @@ import ConfirmOTP from './src/screens/confirmotp';
 import DetailProduct from './src/screens/product/detail';
 import FormSubmission from './src/screens/product/detail/form';
 import Card from './src/screens/card';
+import Simulation from './src/screens/simulation';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,7 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{headerShown: false}}>
+        <Stack.Screen name="Simulation" component={Simulation} />
         <Stack.Screen name="FormSubmission" component={FormSubmission} />
         <Stack.Screen name="Card" component={Card} />
         <Stack.Screen name="DetailProduct" component={DetailProduct} />
