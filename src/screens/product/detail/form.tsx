@@ -21,6 +21,7 @@ import OccupationModal from '../../../components/modals/OccupationModal';
 import HouseModal from '../../../components/modals/HouseModal';
 import BpkbModal from '../../../components/modals/BpkbModal';
 import TenorModal from '../../../components/modals/TenorModal';
+import TaxModal from '../../../components/modals/TaxModal';
 
 export default function FormSubmission({navigation}: any) {
   const [payload, setPayload] = useState<any>();
@@ -230,6 +231,20 @@ export default function FormSubmission({navigation}: any) {
       select: true,
     },
     {
+      label: 'Status Pajak STNK',
+      placeholder: 'Status Pajak STNK',
+      value: selected?.taxstatus_name,
+      required: true,
+      select: true,
+    },
+    {
+      label: 'Status Pajak Plat Nomor',
+      placeholder: 'Status Pajak Plat Nomor',
+      value: selected?.taxstatus_name,
+      required: true,
+      select: true,
+    },
+    {
       label: 'Plat Nomor Kendaraan',
       placeholder: 'Plat Nomor Kendaraan',
       value: payload?.plat_no,
@@ -429,7 +444,7 @@ export default function FormSubmission({navigation}: any) {
                                   setModal({
                                     ...modal,
                                     open: true,
-                                    key: 'kecamatan',
+                                    key: 'Kecamatan',
                                   });
                                 }}
                                 style={{
@@ -879,7 +894,7 @@ export default function FormSubmission({navigation}: any) {
         )}
 
         {/* Detail Modal */}
-        {modal.key == 'Alamat Sekarang' && (
+        {(modal.key == 'Alamat Sekarang' || modal.key == 'Kecamatan') && (
           <DistrictModal
             modal={modal}
             selected={selected}
@@ -895,6 +910,34 @@ export default function FormSubmission({navigation}: any) {
               {value: 'self', name: 'Sendiri'},
               {value: 'other', name: 'Orang Lain'},
             ]}
+            modal={modal}
+            selected={selected}
+            setModal={setModal}
+            setSelected={setSelected}
+          />
+        )}
+
+        {modal.key == 'Status Pajak STNK' && (
+          <TaxModal
+            options={[
+              {value: '1', name: 'Hidup'},
+              {value: '0', name: 'Mati'},
+            ]}
+            title={'Status Pajak STNK'}
+            modal={modal}
+            selected={selected}
+            setModal={setModal}
+            setSelected={setSelected}
+          />
+        )}
+
+        {modal.key == 'Status Pajak Plat Nomor' && (
+          <TaxModal
+            options={[
+              {value: '1', name: 'Hidup'},
+              {value: '0', name: 'Mati'},
+            ]}
+            title={'Status Pajak Plat Nomor'}
             modal={modal}
             selected={selected}
             setModal={setModal}
