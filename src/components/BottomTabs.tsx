@@ -5,8 +5,9 @@ import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 import Card from '../screens/card';
 import Account from '../screens/account';
 import Product from '../screens/product';
-import {TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {COLOR} from '../utils/color';
+import normalize from 'react-native-normalize';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,6 +33,7 @@ export default function BottomTabs({navigation}: any) {
         }}>
         {children}
       </View>
+      <Text style={{color: COLOR.darkGreen, fontSize: normalize(12), marginTop: normalize(20)}}>Tambah Prospek</Text>
     </TouchableOpacity>
   );
 
@@ -65,7 +67,9 @@ export default function BottomTabs({navigation}: any) {
         options={{
           tabBarLabel: '',
           tabBarIcon: ({color, size}) => (
-            <FA5Icon name="times" color={'white'} size={size} />
+            <View>
+              <FA5Icon name="times" color={'white'} size={size} />
+            </View>
           ),
           tabBarButton: props => <CustomTabButton {...props} />,
         }}

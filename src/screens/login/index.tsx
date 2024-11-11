@@ -93,6 +93,7 @@ export default function Login({navigation}: any) {
             borderTopRightRadius: 30,
             elevation: 5,
             marginTop: normalize(100),
+            height: heightScreen
           }}>
           <View
             style={{
@@ -197,6 +198,7 @@ export default function Login({navigation}: any) {
             elevation: 5,
             marginTop: normalize(20),
             flex:2,
+            height: heightScreen
           }}>
           <View
             style={{

@@ -20,7 +20,7 @@ import {
     setSelected: any;
   }
   
-  export default function TenorModal({
+  export default function AddressModal({
     options,
     modal,
     setModal,
@@ -37,7 +37,7 @@ import {
             alignItems: 'center',
           }}>
           <Text style={{color: COLOR.darkGrey, fontSize: normalize(20)}}>
-            Pilih Tenor
+            Alamat Tinggal
           </Text>
           <TouchableOpacity
             onPress={() => {
@@ -59,8 +59,8 @@ import {
               onPress={() => {
                 setSelected({
                   ...selected,
-                  tenor_id: v?.value,
-                  tenor_name: v?.name,
+                  address_value: v?.value,
+                  address_name: v?.name,
                 });
                 setModal({...modal, open: false});
               }}

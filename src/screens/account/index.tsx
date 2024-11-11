@@ -20,7 +20,7 @@ export default function Account({navigation}: any) {
           marginVertical: normalize(30),
         }}>
         <FA5Icon name="user-circle" size={normalize(150)} color={COLOR.blue} />
-        <Text style={{marginTop: normalize(10), fontSize: normalize(30)}}>
+        <Text style={{marginTop: normalize(10), fontSize: normalize(30), color: COLOR.darkGrey}}>
           Adrian Septian
         </Text>
       </View>
@@ -39,6 +39,7 @@ export default function Account({navigation}: any) {
             backgroundColor: 'white',
             borderWidth: 1,
             borderColor: COLOR.gray,
+            elevation: 5
           }}>
           <Text
             style={{
@@ -59,6 +60,7 @@ export default function Account({navigation}: any) {
             backgroundColor: 'white',
             borderWidth: 1,
             borderColor: COLOR.gray,
+            elevation: 5
           }}>
           <Text
             style={{
@@ -79,6 +81,7 @@ export default function Account({navigation}: any) {
             backgroundColor: 'white',
             borderWidth: 1,
             borderColor: COLOR.gray,
+            elevation: 5
           }}>
           <Text
             style={{
@@ -99,6 +102,7 @@ export default function Account({navigation}: any) {
             backgroundColor: 'white',
             borderWidth: 1,
             borderColor: COLOR.gray,
+            elevation: 5
           }}>
           <Text
             style={{
@@ -122,6 +126,8 @@ export default function Account({navigation}: any) {
             backgroundColor: COLOR.red,
             borderWidth: 1,
             borderColor: COLOR.gray,
+            elevation: 5
+
           }}>
           <Text
             style={{

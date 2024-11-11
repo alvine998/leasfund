@@ -20,7 +20,7 @@ import {
     setSelected: any;
   }
   
-  export default function TenorModal({
+  export default function MarritalModal({
     options,
     modal,
     setModal,
@@ -37,7 +37,7 @@ import {
             alignItems: 'center',
           }}>
           <Text style={{color: COLOR.darkGrey, fontSize: normalize(20)}}>
-            Pilih Tenor
+            Status Pernikahan
           </Text>
           <TouchableOpacity
             onPress={() => {
@@ -59,8 +59,8 @@ import {
               onPress={() => {
                 setSelected({
                   ...selected,
-                  tenor_id: v?.value,
-                  tenor_name: v?.name,
+                  marrital_value: v?.value,
+                  marrital_name: v?.name,
                 });
                 setModal({...modal, open: false});
               }}

@@ -18,7 +18,10 @@ import {
 import React, {useCallback, useEffect, useState} from 'react';
 import normalize from 'react-native-normalize';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
-import FA5IconPro from 'react-native-vector-icons/FontAwesome5Pro';
+import MIcon from 'react-native-vector-icons/MaterialIcons';
+import Entcon from 'react-native-vector-icons/Entypo';
+import FontIcon from 'react-native-vector-icons/Fontisto';
+
 import {COLOR} from '../../utils/color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -110,22 +113,46 @@ export default function Home({navigation}: any) {
   const navs = [
     {
       name: 'Kelola Nasabah',
-      icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/customer-service_9759890.png?alt=media&token=37ba0011-64bb-41df-9ae9-4f6e26d5b9b2',
+      icon: (
+        <MIcon
+          name="manage-search"
+          color={COLOR.darkGreen}
+          size={normalize(35)}
+        />
+      ),
       href: '',
     },
     {
       name: 'Member',
-      icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/teamwork_3908526.png?alt=media&token=20475e80-410d-48be-8b93-3faecee87afa',
+      icon: (
+        <FA5Icon
+          name="users"
+          color={COLOR.darkGreen}
+          size={normalize(35)}
+        />
+      ),
       href: '',
     },
     {
       name: 'Poin & Komisi',
-      icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/interest_3636104.png?alt=media&token=be08d4f8-9e2d-4f37-afec-a05ee79f7eef',
+      icon: (
+        <Entcon
+          name="wallet"
+          color={COLOR.darkGreen}
+          size={normalize(35)}
+        />
+      ),
       href: '',
     },
     {
       name: 'Simulasi Cicilan',
-      icon: 'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/maths_766430.png?alt=media&token=4d80fc48-c44c-441c-9db6-f438f8afe650',
+      icon: (
+        <FontIcon
+          name="calculator"
+          color={COLOR.darkGreen}
+          size={normalize(35)}
+        />
+      ),
       href: 'Simulation',
     },
   ];
@@ -334,11 +361,14 @@ export default function Home({navigation}: any) {
           }}>
           {navs?.map((val: any, idx: number) => (
             <View key={idx}>
-              <TouchableOpacity style={styles.boxNav} onPress={()=>navigation.navigate(val?.href)}>
-                <Image
+              <TouchableOpacity
+                style={styles.boxNav}
+                onPress={() => navigation.navigate(val?.href)}>
+                {val?.icon}
+                {/* <Image
                   source={{uri: val?.icon}}
                   style={{width: normalize(50), height: normalize(50)}}
-                />
+                /> */}
               </TouchableOpacity>
               <Text style={styles.text3}>{val?.name}</Text>
             </View>
@@ -349,7 +379,7 @@ export default function Home({navigation}: any) {
       <View
         style={{
           marginBottom: normalize(50),
-          paddingHorizontal: normalize(20)
+          paddingHorizontal: normalize(20),
         }}>
         <TouchableOpacity style={styles.boxCard}>
           <FA5Icon
@@ -383,7 +413,8 @@ export default function Home({navigation}: any) {
                 <TextInput
                   placeholder="Nama Lengkap"
                   value={name}
-                  style={{paddingLeft: normalize(20), height: normalize(40)}}
+                  style={{paddingLeft: normalize(20), height: normalize(40), color: COLOR.darkGrey}}
+                  placeholderTextColor={COLOR.darkGrey}
                   onChangeText={e => setName(e)}
                 />
               </View>
@@ -497,7 +528,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     marginTop: normalize(20),
-    elevation: 5
+    elevation: 5,
   },
   textBoxCard: {
     fontSize: normalize(20),
@@ -571,5 +602,6 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: normalize(15),
     textAlign: 'center',
+    color:"black"
   },
 });

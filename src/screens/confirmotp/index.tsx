@@ -73,20 +73,28 @@ export default function ConfirmOTP({navigation}: any) {
           placeholder="OTP"
           value={otp}
           maxLength={6}
-          style={{paddingLeft: normalize(20), height: normalize(40)}}
+          style={{
+            paddingLeft: normalize(20),
+            height: normalize(40),
+            color: COLOR.darkGrey,
+          }}
+          placeholderTextColor={COLOR.darkGrey}
           onChangeText={e => setOtp(e)}
         />
       </View>
-      {errorMessage && (
-        <Text
-          style={{
-            color: COLOR.red,
-            marginLeft: normalize(20),
-            textAlign: 'left',
-          }}>
-          {errorMessage}
-        </Text>
-      )}
+      <View style={{position: "relative"}}>
+        {errorMessage && (
+          <Text
+            style={{
+              color: COLOR.red,
+              textAlign: 'left',
+              position: "absolute",
+              right: 0
+            }}>
+            {errorMessage}
+          </Text>
+        )}
+      </View>
       <TouchableOpacity
         onPress={onSubmit}
         style={{
