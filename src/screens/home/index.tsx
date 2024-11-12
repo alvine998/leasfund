@@ -15,22 +15,25 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import normalize from 'react-native-normalize';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import Entcon from 'react-native-vector-icons/Entypo';
 import FontIcon from 'react-native-vector-icons/Fontisto';
 
-import {COLOR} from '../../utils/color';
+import { COLOR } from '../../utils/color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   useFocusEffect,
   useNavigationState,
   useRoute,
 } from '@react-navigation/native';
+import { useFetchData, usePatchData } from '../../hooks/api';
+import { CONFIG } from '../../config';
+import axios from 'axios';
 
-export default function Home({navigation}: any) {
+export default function Home({ navigation }: any) {
   const [detail, setDetail] = useState<any>(null);
   const [name, setName] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -39,6 +42,9 @@ export default function Home({navigation}: any) {
   const colorScheme = useColorScheme();
   const widthScreen = Dimensions.get('screen').width;
   const navigationState = useNavigationState(state => state);
+  const { data, error, loading, patchData } = usePatchData(CONFIG.base_url_api + `/user/update/${detail?.uuid}`, { name: name })
+  // const { data, error, loading } = useFetchData(CONFIG.base_url_api + '/user/list')
+  // console.log(data?.items, error, loading);
   const isAtHomeScreen =
     navigationState.routes[navigationState.index].name === 'BottomHome';
 
@@ -47,13 +53,17 @@ export default function Home({navigation}: any) {
       if (!name) {
         return setErrorMessage('Harap lengkapi nama anda');
       }
-      await AsyncStorage.setItem(
-        'register',
-        JSON.stringify({...detail, name: name}),
-      );
-      Alert.alert('Berhasil menambahkan nama');
-      setModal(!modal);
-      getData();
+      // await AsyncStorage.setItem(
+      //   'register',
+      //   JSON.stringify({ ...detail, name: name }),
+      // );
+      console.log(error);
+      await patchData();
+      if (data) {
+        Alert.alert('Berhasil menambahkan nama');
+        setModal(!modal);
+        getData();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -69,11 +79,18 @@ export default function Home({navigation}: any) {
   //     .catch((e) => console.log('Errors while downloading => ', e));
   // }, []);
 
+  // const {data, error, loading} = useFetchData(CONFIG.base_url_api + `/user/list?email=${detail?.email}`)
+
   const getData = async () => {
-    const register: any = await AsyncStorage.getItem('register');
-    const detail = JSON.parse(register);
-    setDetail(detail);
-    if (!detail?.name || detail?.name == '') {
+    const login: any = await AsyncStorage.getItem('login');
+    const detail = JSON.parse(login);
+    const result = await axios.get(CONFIG.base_url_api + `/user/list?email=${detail?.email}`, {
+      headers: {
+        "access_token": "leasfund.com"
+      }
+    })
+    setDetail(result?.data?.items[0]);
+    if (result?.data?.items[0] == '') {
       setModal(true);
     }
   };
@@ -120,27 +137,19 @@ export default function Home({navigation}: any) {
           size={normalize(35)}
         />
       ),
-      href: '',
+      href: 'Customer',
     },
     {
       name: 'Member',
       icon: (
-        <FA5Icon
-          name="users"
-          color={COLOR.darkGreen}
-          size={normalize(35)}
-        />
+        <FA5Icon name="users" color={COLOR.darkGreen} size={normalize(35)} />
       ),
       href: '',
     },
     {
       name: 'Poin & Komisi',
       icon: (
-        <Entcon
-          name="wallet"
-          color={COLOR.darkGreen}
-          size={normalize(35)}
-        />
+        <Entcon name="wallet" color={COLOR.darkGreen} size={normalize(35)} />
       ),
       href: '',
     },
@@ -158,9 +167,8 @@ export default function Home({navigation}: any) {
   ];
 
   const [sliding, setSliding] = useState<number>(0);
-
   useEffect(() => {
-    setTimeout(() => {}, 2000);
+    setTimeout(() => { }, 2000);
   }, []);
 
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -239,9 +247,9 @@ export default function Home({navigation}: any) {
         </View>
       </View>
 
-      <View style={{paddingHorizontal: normalize(20)}}>
+      <View style={{ paddingHorizontal: normalize(20) }}>
         <View style={styles.boxBlue}>
-          <Text style={{color: 'white'}}>Total Komisi</Text>
+          <Text style={{ color: 'white' }}>Total Komisi</Text>
           <View style={styles.row2}>
             <Text style={styles.text1}>
               Rp {show ? '1.000.000' : '********'}
@@ -260,8 +268,8 @@ export default function Home({navigation}: any) {
         </View>
       </View>
 
-      <View style={{marginTop: normalize(10)}}>
-        <ScrollView horizontal pagingEnabled style={{marginTop: normalize(10)}}>
+      <View style={{ marginTop: normalize(10) }}>
+        <ScrollView horizontal pagingEnabled style={{ marginTop: normalize(10) }}>
           {banners?.map((v: any, i: number) => (
             <TouchableOpacity key={i} style={[styles.boxEvent]}>
               <Image
@@ -278,7 +286,7 @@ export default function Home({navigation}: any) {
         </ScrollView>
       </View>
 
-      <View style={{paddingTop: normalize(20)}}>
+      {/* <View style={{paddingTop: normalize(20)}}>
         <View
           style={{
             backgroundColor: 'white',
@@ -334,8 +342,8 @@ export default function Home({navigation}: any) {
             </View>
           </View>
         </View>
-      </View>
-      <View style={{paddingHorizontal: normalize(20)}}>
+      </View> */}
+      <View style={{ paddingHorizontal: normalize(20) }}>
         <TouchableOpacity
           style={styles.boxCard}
           onPress={() => {
@@ -351,7 +359,7 @@ export default function Home({navigation}: any) {
       </View>
 
       <View
-        style={{paddingHorizontal: normalize(20), marginTop: normalize(10)}}>
+        style={{ paddingHorizontal: normalize(20), marginTop: normalize(10) }}>
         <View
           style={{
             flexDirection: 'row',
@@ -376,19 +384,33 @@ export default function Home({navigation}: any) {
         </View>
       </View>
 
-      <View
-        style={{
-          marginBottom: normalize(50),
-          paddingHorizontal: normalize(20),
-        }}>
-        <TouchableOpacity style={styles.boxCard}>
-          <FA5Icon
-            name={'hands-helping'}
-            size={normalize(30)}
-            color={COLOR.blue}
-          />
-          <Text style={styles.textBoxHelp}>Customer Care</Text>
-        </TouchableOpacity>
+      <View style={{ flexDirection: 'row', gap: normalize(10), justifyContent: "center", alignItems: "center" }}>
+        <View
+          style={{
+            marginBottom: normalize(50),
+          }}>
+          <TouchableOpacity style={styles.boxCard2}>
+            <FA5Icon
+              name={'hands-helping'}
+              size={normalize(20)}
+              color={COLOR.darkGrey}
+            />
+            <Text style={styles.textBoxHelp}>Tanya Jawab</Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            marginBottom: normalize(50),
+          }}>
+          <TouchableOpacity style={styles.boxCard2}>
+            <FA5Icon
+              name={'info-circle'}
+              size={normalize(20)}
+              color={COLOR.darkGrey}
+            />
+            <Text style={styles.textBoxHelp}>Bantuan</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       {modal && (
         <Modal
@@ -406,14 +428,18 @@ export default function Home({navigation}: any) {
               <View
                 style={{
                   borderWidth: 1,
-                  borderRadius: 20,
+                  borderRadius: 10,
                   marginTop: normalize(30),
                   width: '100%',
                 }}>
                 <TextInput
                   placeholder="Nama Lengkap"
                   value={name}
-                  style={{paddingLeft: normalize(20), height: normalize(40), color: COLOR.darkGrey}}
+                  style={{
+                    paddingLeft: normalize(20),
+                    height: normalize(40),
+                    color: COLOR.darkGrey,
+                  }}
                   placeholderTextColor={COLOR.darkGrey}
                   onChangeText={e => setName(e)}
                 />
@@ -430,7 +456,7 @@ export default function Home({navigation}: any) {
               )}
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={onAddName}>
+                onPress={()=>{onAddName()}}>
                 <Text style={styles.textStyle}>Simpan</Text>
               </Pressable>
             </View>
@@ -521,8 +547,19 @@ const styles = StyleSheet.create({
   },
   boxCard: {
     width: '100%',
-    height: normalize(50),
-    borderRadius: 20,
+    height: normalize(70),
+    borderRadius: 10,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginTop: normalize(20),
+    elevation: 5,
+  },
+  boxCard2: {
+    width: normalize(170),
+    height: normalize(70),
+    borderRadius: 10,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
@@ -531,12 +568,20 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   textBoxCard: {
-    fontSize: normalize(20),
+    fontSize: normalize(14),
     fontWeight: '400',
     color: 'black',
     textAlign: 'center',
     marginLeft: normalize(10),
     width: normalize(200),
+  },
+  textBoxCard2: {
+    fontSize: normalize(14),
+    fontWeight: '400',
+    color: 'black',
+    textAlign: 'center',
+    marginLeft: normalize(10),
+    width: normalize(100),
   },
   boxHelp: {
     width: Dimensions.get('screen').width,
@@ -554,7 +599,7 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     marginLeft: normalize(10),
-    width: normalize(150),
+    width: normalize(100),
   },
 
   centeredView: {
@@ -582,7 +627,7 @@ const styles = StyleSheet.create({
     opacity: 30,
   },
   button: {
-    borderRadius: 20,
+    borderRadius: 10,
     padding: normalize(10),
     elevation: 2,
     width: '100%',
@@ -602,6 +647,6 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: normalize(15),
     textAlign: 'center',
-    color:"black"
+    color: 'black',
   },
 });

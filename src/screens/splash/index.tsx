@@ -30,9 +30,6 @@ export default function Splash({navigation}: any) {
 
     setTimeout(() => {
       spinAnimation.stop();
-      if (!data) {
-        return navigation.navigate('Intro');
-      }
       if (!JSON.parse(data)?.otp) {
         return navigation.navigate('Login');
       }

@@ -2,6 +2,7 @@ import {
   Alert,
   Dimensions,
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,40 +10,41 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import normalize from 'react-native-normalize';
-import {COLOR} from '../../utils/color';
+import { COLOR } from '../../utils/color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { usePostData } from '../../hooks/api';
+import { CONFIG } from '../../config';
 
-export default function Login({navigation}: any) {
+export default function Login({ navigation }: any) {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const heightScreen = Dimensions.get('screen').height;
 
-  const [data, setData] = useState<any>(null);
+  const [payload, setPayload] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const { data, error, loading, postData } = usePostData(isLogin ?(CONFIG.base_url_api + `/user/sendotp`) : (CONFIG.base_url_api + `/user/create`), payload)
+
 
   const initialState = [
-    {value: 'phone', label: 'No Telepon', required: true},
-    {value: 'email', label: 'Email', required: true},
-    {value: 'referral_code', label: 'Kode Referal', required: false},
+    { value: 'phone', label: 'No Telepon', required: true },
+    { value: 'email', label: 'Email', required: true },
+    { value: 'referral_code', label: 'Kode Referal', required: false },
   ];
 
   useEffect(() => {
-    setData(null);
+    setPayload(null);
   }, []);
 
   const onLogin = async () => {
     try {
-      if (!data) {
-        return setErrorMessage('Harap lengkapi no telepon');
+      if (!payload) {
+        return setErrorMessage('Harap lengkapi email');
       }
       const register: any = await AsyncStorage.getItem('register');
-
-      if (data?.phone !== JSON.parse(register)?.phone) {
-        return setErrorMessage('No telepon tidak terdaftar');
-      }
-      const result = await AsyncStorage.setItem('login', JSON.stringify(data));
-      Alert.alert('Berhasil Masuk, Silahkan Konfirmasi OTP');
+      await postData()
+      const result = await AsyncStorage.setItem('login', JSON.stringify(payload));
+      Alert.alert('Berhasil Masuk, Silahkan Cek Email Untuk Konfirmasi OTP');
       navigation.navigate('ConfirmOTP');
     } catch (error) {
       console.log(error);
@@ -54,24 +56,31 @@ export default function Login({navigation}: any) {
       initialState
         ?.filter((v: any) => v?.required == true)
         ?.map((val: any) => {
-          if (!data?.[val?.value]) {
+          if (!payload?.[val?.value]) {
             return setErrorMessage(`Harap lengkapi ${val?.label}`);
           }
         });
-
-      const result = await AsyncStorage.setItem(
-        'register',
-        JSON.stringify({...data, otp: '123456'}),
-      );
-      Alert.alert('Berhasil Mendaftar');
-      setIsLogin(true);
+      await postData();
+      if (data) {
+        Alert.alert('Berhasil Mendaftar, Silahkan Login!');
+        setIsLogin(true);
+      }
     } catch (error) {
       console.log(error);
     }
   };
+  const [refresh, setRefresh] = useState<boolean>(false);
+  const onRefresh = async () => {
+    setRefresh(true);
+    setTimeout(() => {
+      setRefresh(false);
+    }, 2000);
+  }
 
   return (
-    <ScrollView style={{backgroundColor: 'white'}}>
+    <ScrollView style={{ backgroundColor: 'white' }} refreshControl={
+      <RefreshControl onRefresh={onRefresh} refreshing={refresh} />
+    }>
       <View
         style={{
           width: '100%',
@@ -82,43 +91,46 @@ export default function Login({navigation}: any) {
         }}>
         <Image
           source={require('../../assets/images/logo_icon.png')}
-          style={{width: normalize(100), height: normalize(100)}}
+          style={{ width: normalize(100), height: normalize(100), marginTop: normalize(-15) }}
         />
       </View>
       {isLogin && (
         <View
           style={{
             backgroundColor: 'white',
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
             elevation: 5,
-            marginTop: normalize(100),
+            marginTop: normalize(-10),
+            paddingTop: normalize(100),
             height: heightScreen
           }}>
           <View
             style={{
               paddingHorizontal: normalize(50),
             }}>
+            <Text style={{ color: "black", textAlign: "center", fontSize: normalize(24), fontWeight: "bold" }}>Login Email</Text>
+            <Text style={{ color: COLOR.darkGrey, textAlign: "center", fontSize: normalize(14) }}>Kamu akan menerima Kode OTP melalui Email.{`\n`}Login Kode OTP untuk verifikasi akumu.</Text>
             <View
               style={{
                 borderWidth: 1,
-                borderRadius: 20,
+                borderRadius: 10,
                 marginTop: normalize(30),
               }}>
               <TextInput
-                placeholder="No Telepon"
-                value={data?.phone}
+                placeholder="Email"
+                value={payload?.email}
                 style={{
-                  paddingLeft: normalize(20),
+                  paddingLeft: normalize(30),
                   height: normalize(40),
                   color: COLOR.darkGrey,
                 }}
                 placeholderTextColor={COLOR.darkGrey}
-                onChangeText={e => setData({phone: e})}
+                onChangeText={e => setPayload({ email: e })}
               />
             </View>
             {errorMessage && (
-              <Text style={{color: COLOR.red, marginLeft: normalize(20)}}>
+              <Text style={{ color: COLOR.red, marginLeft: normalize(20) }}>
                 {errorMessage}
               </Text>
             )}
@@ -126,7 +138,7 @@ export default function Login({navigation}: any) {
             <TouchableOpacity
               onPress={() => {
                 setIsLogin(false);
-                setData(null);
+                setPayload(null);
                 setErrorMessage('');
               }}
               style={{
@@ -134,13 +146,13 @@ export default function Login({navigation}: any) {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{color: 'black'}}>
+              <Text style={{ color: 'black' }}>
                 Belum memiliki akun? Daftar disini
               </Text>
             </TouchableOpacity>
 
-            <View style={{marginTop: normalize(20)}}>
-              <Text style={{textAlign: 'center', color: 'black'}}>
+            <View style={{ marginTop: normalize(20) }}>
+              <Text style={{ textAlign: 'center', color: 'black' }}>
                 Dengan melanjutkan, kamu setuju dengan{' '}
                 <TouchableOpacity>
                   <Text
@@ -167,8 +179,8 @@ export default function Login({navigation}: any) {
           </View>
           <View
             style={{
-              paddingHorizontal: normalize(20),
-              marginTop: normalize(250),
+              paddingHorizontal: normalize(50),
+              marginTop: normalize(20),
             }}>
             <TouchableOpacity
               onPress={onLogin}
@@ -180,8 +192,8 @@ export default function Login({navigation}: any) {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text style={{color: 'white', fontSize: normalize(20)}}>
-                Masuk
+              <Text style={{ color: 'white', fontSize: normalize(20) }}>
+                Kirim OTP
               </Text>
             </TouchableOpacity>
           </View>
@@ -193,25 +205,28 @@ export default function Login({navigation}: any) {
           style={{
             paddingHorizontal: normalize(50),
             backgroundColor: 'white',
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
             elevation: 5,
-            marginTop: normalize(20),
-            flex:2,
+            marginTop: normalize(-20),
+            paddingTop: normalize(150),
+            flex: 2,
             height: heightScreen
           }}>
+          <Text style={{ color: "black", textAlign: "center", fontSize: normalize(18) }}>Selamat Datang di</Text>
+          <Text style={{ color: "black", textAlign: "center", fontSize: normalize(24), fontWeight: "bold" }}>LEASFUND</Text>
           <View
             style={{
               borderWidth: 1,
-              borderRadius: 20,
+              borderRadius: 10,
               marginTop: normalize(30),
             }}>
             <TextInput
               placeholder="No Telepon"
-              value={data?.phone}
+              value={payload?.phone}
               keyboardType='number-pad'
               onChangeText={e => {
-                setData({...data, phone: e});
+                setPayload({ ...payload, phone: e });
               }}
               style={{
                 paddingLeft: normalize(20),
@@ -224,14 +239,14 @@ export default function Login({navigation}: any) {
           <View
             style={{
               borderWidth: 1,
-              borderRadius: 20,
+              borderRadius: 10,
               marginTop: normalize(20),
             }}>
             <TextInput
               placeholder="Email"
-              value={data?.email}
+              value={payload?.email}
               onChangeText={e => {
-                setData({...data, email: e});
+                setPayload({ ...payload, email: e });
               }}
               style={{
                 paddingLeft: normalize(20),
@@ -244,14 +259,14 @@ export default function Login({navigation}: any) {
           <View
             style={{
               borderWidth: 1,
-              borderRadius: 20,
+              borderRadius: 10,
               marginTop: normalize(20),
             }}>
             <TextInput
               placeholder="Kode Referral (Jika Ada)"
-              value={data?.referral_code}
+              value={payload?.referral_code}
               onChangeText={e => {
-                setData({...data, referral_code: e});
+                setPayload({ ...payload, referral_code: e });
               }}
               style={{
                 paddingLeft: normalize(20),
@@ -262,7 +277,7 @@ export default function Login({navigation}: any) {
             />
           </View>
           {errorMessage && (
-            <Text style={{color: COLOR.red, marginLeft: normalize(20)}}>
+            <Text style={{ color: COLOR.red, marginLeft: normalize(20) }}>
               {errorMessage}
             </Text>
           )}
@@ -270,20 +285,20 @@ export default function Login({navigation}: any) {
             onPress={onRegister}
             style={{
               backgroundColor: COLOR.default,
-              height: normalize(35),
+              height: normalize(50),
               width: '100%',
-              borderRadius: 20,
+              borderRadius: 10,
               justifyContent: 'center',
               alignItems: 'center',
               marginTop: normalize(20),
             }}>
-            <Text style={{color: 'white'}}>Daftar Sekarang</Text>
+            <Text style={{ color: 'white' }}>Daftar Sekarang</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => {
               setIsLogin(true);
-              setData(null);
+              setPayload(null);
               setErrorMessage('');
             }}
             style={{
@@ -291,13 +306,13 @@ export default function Login({navigation}: any) {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text style={{color: 'black'}}>
+            <Text style={{ color: 'black' }}>
               Sudah memiliki akun? Masuk disini
             </Text>
           </TouchableOpacity>
 
-          <View style={{marginTop: normalize(20)}}>
-            <Text style={{textAlign: 'center', color: 'black'}}>
+          <View style={{ marginTop: normalize(20) }}>
+            <Text style={{ textAlign: 'center', color: 'black' }}>
               Dengan melanjutkan, kamu setuju dengan{' '}
               <TouchableOpacity>
                 <Text
@@ -321,6 +336,7 @@ export default function Login({navigation}: any) {
               </TouchableOpacity>
             </Text>
           </View>
+          <Text style={{ color: COLOR.darkGrey, textAlign: "center", fontSize: normalize(12), marginTop: normalize(50) }}>PT. Leasfund Teknologi Solusi {`\n`} v1.1.1</Text>
         </View>
       )}
     </ScrollView>

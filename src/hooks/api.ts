@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export const useFetchData = async (url: string) => {
+export const useFetchData = (url: string) => {
     const [data, setData] = useState<any>(null);
     const [error, setError] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -9,86 +9,95 @@ export const useFetchData = async (url: string) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(url);
+                const response = await axios.get(url, {
+                    headers: {
+                        "access_token": "leasfund.com"
+                    }
+                });
                 setData(response?.data);
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
                 setError(error)
-                console.log(error);
+                console.log(error, "error");
             }
         };
         fetchData();
     }, [url]);
 
-    return { data, loading, error };
-};
-
-export const usePostData = async (url: string, payload: object) => {
-    const [data, setData] = useState<any>(null);
-    const [error, setError] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const postData = async () => {
-            try {
-                const response = await axios.post(url, payload);
-                setData(response?.data);
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                setError(error)
-                console.log(error);
-            }
-        };
-        postData();
-    }, [url]);
+    console.log(url, 'datas');
 
     return { data, loading, error };
 };
 
-export const usePatchData = async (url: string, payload: object) => {
+export const usePostData = (url: string, payload: object) => {
     const [data, setData] = useState<any>(null);
     const [error, setError] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        const patchData = async () => {
-            try {
-                const response = await axios.patch(url, payload);
-                setData(response?.data);
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                setError(error)
-                console.log(error);
-            }
-        };
-        patchData();
-    }, [url]);
+    const postData = async () => {
+        try {
+            const response = await axios.post(url, payload, {
+                headers: {
+                    "access_token": "leasfund.com"
+                }
+            });
+            setData(response?.data);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setError(error)
+            console.log(error);
+        }
+    };
 
-    return { data, loading, error };
+    return { data, loading, error, postData };
 };
 
-export const useDeleteData = async (url: string, id: number) => {
+export const usePatchData = (url: string, payload: object) => {
     const [data, setData] = useState<any>(null);
     const [error, setError] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        const deleteData = async () => {
-            try {
-                const response = await axios.delete(url + id);
-                setData(response?.data);
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                setError(error)
-                console.log(error);
-            }
-        };
-        deleteData();
-    }, [url]);
+    const patchData = async () => {
+        try {
+            const response = await axios.put(url, payload, {
+                headers: {
+                    "access_token": "leasfund.com"
+                }
+            });
+            setData(response?.data);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setError(error)
+            console.log(error);
+        }
+    };
 
-    return { data, loading, error };
+    return { data, loading, error, patchData };
+};
+
+export const useDeleteData = (url: string, id: number) => {
+    const [data, setData] = useState<any>(null);
+    const [error, setError] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const deleteData = async () => {
+        try {
+            const response = await axios.delete(url + id, {
+                headers: {
+                    "access_token": "leasfund.com"
+                }
+            });
+            setData(response?.data);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setError(error)
+            console.log(error);
+        }
+    }
+
+    return { data, loading, error, deleteData };
 };

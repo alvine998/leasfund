@@ -1,11 +1,11 @@
-import {View, Text} from 'react-native';
+import { View, Text } from 'react-native';
 import React from 'react';
 import Splash from './src/screens/splash';
 import Intro from './src/screens/intro';
 import Home from './src/screens/home';
 import Login from './src/screens/login';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {NavigationContainer} from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 import BottomTabs from './src/components/BottomTabs';
 import ConfirmOTP from './src/screens/confirmotp';
 import DetailProduct from './src/screens/product/detail';
@@ -13,6 +13,7 @@ import FormSubmission from './src/screens/product/detail/form';
 import Card from './src/screens/card';
 import Simulation from './src/screens/simulation';
 import EditProfile from './src/screens/account/edit';
+import Customer from './src/screens/customer';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +22,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Splash"
-        screenOptions={{headerShown: false}}>
+        screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Customer" component={Customer} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="Simulation" component={Simulation} />
         <Stack.Screen name="FormSubmission" component={FormSubmission} />

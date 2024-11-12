@@ -6,16 +6,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import normalize from 'react-native-normalize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {COLOR} from '../../utils/color';
+import { COLOR } from '../../utils/color';
+import { usePostData } from '../../hooks/api';
+import { CONFIG } from '../../config';
 
-export default function ConfirmOTP({navigation}: any) {
+export default function ConfirmOTP({ navigation }: any) {
   const [otp, setOtp] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [detail, setDetail] = useState<any>(null);
   const [login, setLogin] = useState<any>(null);
+  const { data, error, loading, postData } = usePostData(CONFIG.base_url_api + `/user/confirmotp`, { otp })
 
   const getData = async () => {
     const register: any = await AsyncStorage.getItem('register');
@@ -30,15 +33,18 @@ export default function ConfirmOTP({navigation}: any) {
 
   const onSubmit = async () => {
     try {
-      if (detail?.otp !== otp) {
-        return setErrorMessage('Kode OTP Salah');
+      // if (detail?.otp !== otp) {
+      //   return setErrorMessage('Kode OTP Salah');
+      // }
+      await postData()
+      // await AsyncStorage.setItem(
+      //   'login',
+      //   JSON.stringify({...login, otp: detail?.otp}),
+      // );
+      if (data) {
+        Alert.alert(`Selamat Datang`);
+        navigation.navigate('Home');
       }
-      await AsyncStorage.setItem(
-        'login',
-        JSON.stringify({...login, otp: detail?.otp}),
-      );
-      Alert.alert(`Selamat Datang`);
-      navigation.navigate('Home');
     } catch (error) {
       console.log(error);
     }
@@ -54,10 +60,10 @@ export default function ConfirmOTP({navigation}: any) {
       }}>
       <View>
         <Text
-          style={{color: 'black', fontSize: normalize(24), fontWeight: 'bold'}}>
+          style={{ color: 'black', fontSize: normalize(24), fontWeight: 'bold' }}>
           Konfirmasi Kode OTP
         </Text>
-        <Text style={{color: 'black'}}>
+        <Text style={{ color: 'black' }}>
           Silahkan Masukkan Kode OTP yang telah dikirimkan ke email:{' '}
           {detail?.email}
         </Text>
@@ -78,11 +84,12 @@ export default function ConfirmOTP({navigation}: any) {
             height: normalize(40),
             color: COLOR.darkGrey,
           }}
+          keyboardType='number-pad'
           placeholderTextColor={COLOR.darkGrey}
           onChangeText={e => setOtp(e)}
         />
       </View>
-      <View style={{position: "relative"}}>
+      <View style={{ position: "relative" }}>
         {errorMessage && (
           <Text
             style={{
@@ -106,7 +113,7 @@ export default function ConfirmOTP({navigation}: any) {
           alignItems: 'center',
           marginTop: normalize(20),
         }}>
-        <Text style={{color: 'white'}}>Masuk</Text>
+        <Text style={{ color: 'white' }}>Masuk</Text>
       </TouchableOpacity>
     </View>
   );
