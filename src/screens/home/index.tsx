@@ -145,7 +145,7 @@ export default function Home({ navigation }: any) {
       icon: (
         <FA5Icon name="users" color={COLOR.darkGreen} size={normalize(35)} />
       ),
-      href: '',
+      href: 'Member',
     },
     {
       name: 'Poin & Komisi',
