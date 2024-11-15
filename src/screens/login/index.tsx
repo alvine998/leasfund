@@ -16,6 +16,7 @@ import { COLOR } from '../../utils/color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { usePostData } from '../../hooks/api';
 import { CONFIG } from '../../config';
+import axios from 'axios';
 
 export default function Login({ navigation }: any) {
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -23,7 +24,7 @@ export default function Login({ navigation }: any) {
 
   const [payload, setPayload] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { data, error, loading, postData } = usePostData(isLogin ?(CONFIG.base_url_api + `/user/sendotp`) : (CONFIG.base_url_api + `/user/create`), payload)
+  const { data, error, loading, postData } = usePostData(isLogin ? (CONFIG.base_url_api + `/user/sendotp`) : (CONFIG.base_url_api + `/user/create`), payload)
 
 
   const initialState = [
@@ -42,8 +43,12 @@ export default function Login({ navigation }: any) {
         return setErrorMessage('Harap lengkapi email');
       }
       const register: any = await AsyncStorage.getItem('register');
-      await postData()
-      const result = await AsyncStorage.setItem('login', JSON.stringify(payload));
+      const result = await axios.post(CONFIG.base_url_api + `/user/sendotp`, payload, {
+        headers: {
+          "access_token": CONFIG.access_token
+        }
+      })
+      const data = await AsyncStorage.setItem('login', JSON.stringify(payload));
       Alert.alert('Berhasil Masuk, Silahkan Cek Email Untuk Konfirmasi OTP');
       navigation.navigate('ConfirmOTP');
     } catch (error) {
@@ -60,7 +65,11 @@ export default function Login({ navigation }: any) {
             return setErrorMessage(`Harap lengkapi ${val?.label}`);
           }
         });
-      await postData();
+      const result = await axios.post(CONFIG.base_url_api + `/user/create`, payload, {
+        headers: {
+          "access_token": CONFIG.access_token
+        }
+      })
       if (data) {
         Alert.alert('Berhasil Mendaftar, Silahkan Login!');
         setIsLogin(true);
@@ -121,7 +130,7 @@ export default function Login({ navigation }: any) {
                 placeholder="Email"
                 value={payload?.email}
                 style={{
-                  paddingLeft: normalize(30),
+                  paddingLeft: normalize(20),
                   height: normalize(40),
                   color: COLOR.darkGrey,
                 }}
@@ -209,7 +218,7 @@ export default function Login({ navigation }: any) {
             borderTopRightRadius: 10,
             elevation: 5,
             marginTop: normalize(-20),
-            paddingTop: normalize(150),
+            paddingTop: normalize(130),
             flex: 2,
             height: heightScreen
           }}>

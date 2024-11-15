@@ -14,6 +14,8 @@ import Card from './src/screens/card';
 import Simulation from './src/screens/simulation';
 import EditProfile from './src/screens/account/edit';
 import Customer from './src/screens/customer';
+import Privacy from './src/screens/privacy';
+import Term from './src/screens/term';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +25,8 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Term" component={Term} />
+        <Stack.Screen name="Privacy" component={Privacy} />
         <Stack.Screen name="Customer" component={Customer} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="Simulation" component={Simulation} />

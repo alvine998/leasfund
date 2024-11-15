@@ -12,13 +12,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLOR } from '../../utils/color';
 import { usePostData } from '../../hooks/api';
 import { CONFIG } from '../../config';
+import axios from 'axios';
 
 export default function ConfirmOTP({ navigation }: any) {
   const [otp, setOtp] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [detail, setDetail] = useState<any>(null);
   const [login, setLogin] = useState<any>(null);
-  const { data, error, loading, postData } = usePostData(CONFIG.base_url_api + `/user/confirmotp`, { otp })
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getData = async () => {
     const register: any = await AsyncStorage.getItem('register');
@@ -33,19 +34,24 @@ export default function ConfirmOTP({ navigation }: any) {
 
   const onSubmit = async () => {
     try {
+      setIsLoading(true)
       // if (detail?.otp !== otp) {
       //   return setErrorMessage('Kode OTP Salah');
       // }
-      await postData()
-      // await AsyncStorage.setItem(
-      //   'login',
-      //   JSON.stringify({...login, otp: detail?.otp}),
-      // );
-      if (data) {
+      const result = await axios.post(CONFIG.base_url_api + `/user/confirmotp`, { otp }, {
+        headers: {
+          "access_token": CONFIG.access_token
+        }
+      })
+      if (result) {
         Alert.alert(`Selamat Datang`);
         navigation.navigate('Home');
+      } else {
+        Alert.alert("Kode OTP Salah!")
       }
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
       console.log(error);
     }
   };
@@ -113,7 +119,7 @@ export default function ConfirmOTP({ navigation }: any) {
           alignItems: 'center',
           marginTop: normalize(20),
         }}>
-        <Text style={{ color: 'white' }}>Masuk</Text>
+        <Text style={{ color: 'white' }}>{isLoading ? "Loading..." : "Masuk"}</Text>
       </TouchableOpacity>
     </View>
   );
