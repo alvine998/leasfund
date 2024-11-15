@@ -1,22 +1,27 @@
-import {View, Text, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import normalize from 'react-native-normalize';
-import {COLOR} from '../../utils/color';
+import { COLOR } from '../../utils/color';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 import Car from '../../components/ui/simulation/Car';
 import Motor from '../../components/ui/simulation/Motor';
+import BackButton from '../../components/BackButton';
 
-export default function Simulation() {
+export default function Simulation({ navigation }: any) {
   const [type, setType] = useState<string>('car');
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{justifyContent:"flex-start", alignItems:"flex-start"}}>
+        <BackButton navigation={navigation} />
+      </View>
       <View
         style={{
           width: '100%',
           paddingHorizontal: normalize(40),
           flexDirection: 'row',
           gap: normalize(10),
+          marginTop: normalize(20)
         }}>
         <TouchableOpacity
           onPress={() => {
@@ -84,7 +89,7 @@ export default function Simulation() {
         }}>
         Simulasi Kredit {type == 'car' ? 'Mobil' : 'Motor'}
       </Text>
-      <View style={{width: '100%', paddingHorizontal: normalize(40), marginTop: normalize(20)}}>{type == 'car' ? <Car /> : <Motor />}</View>
+      <View style={{ width: '100%', paddingHorizontal: normalize(40), marginTop: normalize(20) }}>{type == 'car' ? <Car /> : <Motor />}</View>
     </View>
   );
 }

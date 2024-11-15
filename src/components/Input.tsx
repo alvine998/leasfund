@@ -29,6 +29,7 @@ export default function Input({
           fontSize: normalize(18),
           color: 'black',
           marginLeft: normalize(10),
+          fontWeight:"bold"
         }}>
         {label}
       </Text>

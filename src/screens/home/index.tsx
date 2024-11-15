@@ -152,7 +152,7 @@ export default function Home({ navigation }: any) {
       icon: (
         <Entcon name="wallet" color={COLOR.darkGreen} size={normalize(35)} />
       ),
-      href: '',
+      href: 'Commision',
     },
     {
       name: 'Simulasi Cicilan',
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   textBoxCard: {
-    fontSize: normalize(14),
+    fontSize: normalize(18),
     fontWeight: '400',
     color: 'black',
     textAlign: 'center',

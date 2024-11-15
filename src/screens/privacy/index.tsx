@@ -6,7 +6,7 @@ import BackButton from '../../components/BackButton'
 
 export default function Privacy({navigation}: any) {
     return (
-        <ScrollView style={{ padding: normalize(20) }}>
+        <ScrollView scrollEnabled showsVerticalScrollIndicator style={{ padding: normalize(20) }}>
             <BackButton navigation={navigation} />
             <Text style={{ color: "black", fontWeight: "bold", fontSize: normalize(20), textAlign: "center", marginTop: normalize(20) }}>Kebijakan Privasi</Text>
             <Text style={{ color: COLOR.darkGrey, textAlign: "justify", marginTop: normalize(10), lineHeight: normalize(25) }}>

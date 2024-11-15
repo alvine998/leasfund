@@ -19,6 +19,7 @@ import Term from './src/screens/term';
 import AboutUs from './src/screens/aboutus';
 import Member from './src/screens/member';
 import History from './src/screens/history';
+import Commision from './src/screens/commision';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,7 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Commision" component={Commision} />
         <Stack.Screen name="History" component={History} />
         <Stack.Screen name="Member" component={Member} />
         <Stack.Screen name="AboutUs" component={AboutUs} />
