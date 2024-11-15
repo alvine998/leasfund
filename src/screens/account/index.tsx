@@ -81,7 +81,11 @@ export default function Account({ navigation }: any) {
             borderWidth: 1,
             borderColor: COLOR.gray,
             elevation: 5
-          }}>
+          }}
+          onPress={() => {
+            navigation.navigate("AboutUs")
+          }}
+        >
           <Text
             style={{
               textAlign: 'center',

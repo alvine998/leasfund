@@ -3,6 +3,7 @@ import {
   BackHandler,
   Dimensions,
   Image,
+  Linking,
   Modal,
   Pressable,
   RefreshControl,
@@ -402,7 +403,9 @@ export default function Home({ navigation }: any) {
           style={{
             marginBottom: normalize(50),
           }}>
-          <TouchableOpacity style={styles.boxCard2}>
+          <TouchableOpacity style={styles.boxCard2} onPress={() => {
+            Linking.openURL('whatsapp://send?phone=6285863953727&text=Halo admin saya ingin meminta bantuan')
+          }}>
             <FA5Icon
               name={'info-circle'}
               size={normalize(20)}
@@ -456,7 +459,7 @@ export default function Home({ navigation }: any) {
               )}
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={()=>{onAddName()}}>
+                onPress={() => { onAddName() }}>
                 <Text style={styles.textStyle}>Simpan</Text>
               </Pressable>
             </View>

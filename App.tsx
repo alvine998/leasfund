@@ -16,6 +16,7 @@ import EditProfile from './src/screens/account/edit';
 import Customer from './src/screens/customer';
 import Privacy from './src/screens/privacy';
 import Term from './src/screens/term';
+import AboutUs from './src/screens/aboutus';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="AboutUs" component={AboutUs} />
         <Stack.Screen name="Term" component={Term} />
         <Stack.Screen name="Privacy" component={Privacy} />
         <Stack.Screen name="Customer" component={Customer} />
