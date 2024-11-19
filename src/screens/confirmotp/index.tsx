@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   StyleSheet,
   Text,
@@ -6,15 +7,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import normalize from 'react-native-normalize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLOR } from '../../utils/color';
-import { usePostData } from '../../hooks/api';
-import { CONFIG } from '../../config';
+import {COLOR} from '../../utils/color';
+import {usePostData} from '../../hooks/api';
+import {CONFIG} from '../../config';
 import axios from 'axios';
 
-export default function ConfirmOTP({ navigation }: any) {
+export default function ConfirmOTP({navigation}: any) {
   const [otp, setOtp] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [detail, setDetail] = useState<any>(null);
@@ -34,24 +35,28 @@ export default function ConfirmOTP({ navigation }: any) {
 
   const onSubmit = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       // if (detail?.otp !== otp) {
       //   return setErrorMessage('Kode OTP Salah');
       // }
-      const result = await axios.post(CONFIG.base_url_api + `/user/confirmotp`, { otp }, {
-        headers: {
-          "access_token": CONFIG.access_token
-        }
-      })
+      const result = await axios.post(
+        CONFIG.base_url_api + `/user/confirmotp`,
+        {otp},
+        {
+          headers: {
+            access_token: CONFIG.access_token,
+          },
+        },
+      );
       if (result) {
         Alert.alert(`Selamat Datang`);
         navigation.navigate('Home');
       } else {
-        Alert.alert("Kode OTP Salah!")
+        Alert.alert('Kode OTP Salah!');
       }
-      setIsLoading(false)
+      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       console.log(error);
     }
   };
@@ -66,10 +71,10 @@ export default function ConfirmOTP({ navigation }: any) {
       }}>
       <View>
         <Text
-          style={{ color: 'black', fontSize: normalize(24), fontWeight: 'bold' }}>
+          style={{color: 'black', fontSize: normalize(24), fontWeight: 'bold'}}>
           Konfirmasi Kode OTP
         </Text>
-        <Text style={{ color: 'black' }}>
+        <Text style={{color: 'black'}}>
           Silahkan Masukkan Kode OTP yang telah dikirimkan ke email:{' '}
           {detail?.email}
         </Text>
@@ -90,19 +95,19 @@ export default function ConfirmOTP({ navigation }: any) {
             height: normalize(40),
             color: COLOR.darkGrey,
           }}
-          keyboardType='number-pad'
+          keyboardType="number-pad"
           placeholderTextColor={COLOR.darkGrey}
           onChangeText={e => setOtp(e)}
         />
       </View>
-      <View style={{ position: "relative" }}>
+      <View style={{position: 'relative'}}>
         {errorMessage && (
           <Text
             style={{
               color: COLOR.red,
               textAlign: 'left',
-              position: "absolute",
-              right: 0
+              position: 'absolute',
+              right: 0,
             }}>
             {errorMessage}
           </Text>
@@ -110,6 +115,7 @@ export default function ConfirmOTP({ navigation }: any) {
       </View>
       <TouchableOpacity
         onPress={onSubmit}
+        disabled={isLoading}
         style={{
           backgroundColor: '#4bba4e',
           height: normalize(35),
@@ -119,7 +125,13 @@ export default function ConfirmOTP({ navigation }: any) {
           alignItems: 'center',
           marginTop: normalize(20),
         }}>
-        <Text style={{ color: 'white' }}>{isLoading ? "Loading..." : "Masuk"}</Text>
+        {isLoading ? (
+          <ActivityIndicator size={'small'} color={'white'} />
+        ) : (
+          <Text style={{color: 'white'}}>
+            {isLoading ? 'Loading...' : 'Masuk'}
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );

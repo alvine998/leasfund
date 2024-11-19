@@ -6,9 +6,10 @@ export interface IModal {
   modal: any;
   setModal: any;
   children: any;
+  isFull?: boolean;
 }
 
-export default function Modals({modal, setModal, children}: IModal) {
+export default function Modals({modal, setModal, children, isFull}: IModal) {
   return (
     <View>
       <Modal
@@ -18,8 +19,14 @@ export default function Modals({modal, setModal, children}: IModal) {
         onRequestClose={() => {
           setModal({...modal, open: false});
         }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>{children}</View>
+        <View
+          style={[
+            styles.centeredView,
+            isFull ? {paddingHorizontal: normalize(-20)} : {},
+          ]}>
+          <View style={[styles.modalView, isFull ? {height: '100%'} : {}]}>
+            {children}
+          </View>
         </View>
       </Modal>
     </View>

@@ -16,25 +16,25 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import normalize from 'react-native-normalize';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import Entcon from 'react-native-vector-icons/Entypo';
 import FontIcon from 'react-native-vector-icons/Fontisto';
 
-import { COLOR } from '../../utils/color';
+import {COLOR} from '../../utils/color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   useFocusEffect,
   useNavigationState,
   useRoute,
 } from '@react-navigation/native';
-import { useFetchData, usePatchData } from '../../hooks/api';
-import { CONFIG } from '../../config';
+import {useFetchData, usePatchData} from '../../hooks/api';
+import {CONFIG} from '../../config';
 import axios from 'axios';
 
-export default function Home({ navigation }: any) {
+export default function Home({navigation}: any) {
   const [detail, setDetail] = useState<any>(null);
   const [name, setName] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -43,7 +43,10 @@ export default function Home({ navigation }: any) {
   const colorScheme = useColorScheme();
   const widthScreen = Dimensions.get('screen').width;
   const navigationState = useNavigationState(state => state);
-  const { data, error, loading, patchData } = usePatchData(CONFIG.base_url_api + `/user/update/${detail?.uuid}`, { name: name })
+  const {data, error, loading, patchData} = usePatchData(
+    CONFIG.base_url_api + `/user/update/${detail?.uuid}`,
+    {name: name},
+  );
   // const { data, error, loading } = useFetchData(CONFIG.base_url_api + '/user/list')
   // console.log(data?.items, error, loading);
   const isAtHomeScreen =
@@ -85,11 +88,14 @@ export default function Home({ navigation }: any) {
   const getData = async () => {
     const login: any = await AsyncStorage.getItem('login');
     const detail = JSON.parse(login);
-    const result = await axios.get(CONFIG.base_url_api + `/user/list?email=${detail?.email}`, {
-      headers: {
-        "access_token": "leasfund.com"
-      }
-    })
+    const result = await axios.get(
+      CONFIG.base_url_api + `/user/list?email=${detail?.email}`,
+      {
+        headers: {
+          access_token: 'leasfund.com',
+        },
+      },
+    );
     setDetail(result?.data?.items[0]);
     if (result?.data?.items[0] == '') {
       setModal(true);
@@ -169,21 +175,22 @@ export default function Home({ navigation }: any) {
 
   const [sliding, setSliding] = useState<number>(0);
   useEffect(() => {
-    setTimeout(() => { }, 2000);
+    setTimeout(() => {}, 2000);
   }, []);
 
   const [refresh, setRefresh] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>();
 
   let banners = [
-    'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FA.jpg?alt=media&token=8561e991-b7ee-4f5c-8df2-49f0bfee438e',
-    'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FB.jpg?alt=media&token=3e192d99-74d0-4b16-b5c9-1282fe1b247f',
-    'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FSAMPUL%205.jpg?alt=media&token=84c20ac7-aea4-47b4-8b03-ca986411174f',
+    'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FBanner%201%20Leasfund%201920x720.png?alt=media&token=709af5a4-1f79-4622-8ecb-1f7dd840786a',
+    'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FBanner%202%20Leasfund%201920x720.png?alt=media&token=842b5032-d3e7-4fb3-ba5f-6e53fef54a8c',
+    'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FBanner%203%20Leasfund%201920x720.png?alt=media&token=e31e4d37-fd4d-4d1a-ac6e-be884cdd4050',
   ];
 
   const onRefresh = () => {
     setRefresh(true);
     setTimeout(() => {
+      getData();
       setRefresh(false);
     }, 2000);
   };
@@ -194,11 +201,14 @@ export default function Home({ navigation }: any) {
       }>
       <View style={styles.headerContainer}>
         <View style={styles.row}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('EditProfile');
+            }}>
             <FA5Icon
               name="user-circle"
               size={normalize(50)}
-              color={COLOR.blue}
+              color={COLOR.darkGrey}
             />
           </TouchableOpacity>
           <Text style={styles.name}>
@@ -206,13 +216,13 @@ export default function Home({ navigation }: any) {
           </Text>
         </View>
         <TouchableOpacity>
-          <FA5Icon name="bell" size={normalize(30)} color={COLOR.blue} />
+          <FA5Icon name="bell" size={normalize(30)} color={COLOR.darkGrey} />
         </TouchableOpacity>
       </View>
 
       <View
         style={{
-          backgroundColor: COLOR.darkGreen,
+          backgroundColor: COLOR.default,
           height: normalize(250),
           borderBottomRightRadius: 50,
         }}></View>
@@ -248,13 +258,15 @@ export default function Home({ navigation }: any) {
         </View>
       </View>
 
-      <View style={{ paddingHorizontal: normalize(20) }}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('Performance');
+        }}
+        style={{paddingHorizontal: normalize(20)}}>
         <View style={styles.boxBlue}>
-          <Text style={{ color: 'white' }}>Total Komisi</Text>
+          <Text style={{color: 'black'}}>Total Komisi</Text>
           <View style={styles.row2}>
-            <Text style={styles.text1}>
-              Rp {show ? '1.000.000' : '********'}
-            </Text>
+            <Text style={styles.text1}>Rp {show ? '0' : '********'}</Text>
             <TouchableOpacity
               onPress={() => {
                 setShow(!show);
@@ -262,27 +274,27 @@ export default function Home({ navigation }: any) {
               <FA5Icon
                 name={show ? 'eye' : 'eye-slash'}
                 size={normalize(20)}
-                color={'white'}
+                color={'black'}
               />
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
 
-      <View style={{ marginTop: normalize(10) }}>
-        <ScrollView horizontal pagingEnabled style={{ marginTop: normalize(10) }}>
+      <View style={{marginTop: normalize(10)}}>
+        <ScrollView horizontal pagingEnabled style={{marginTop: normalize(10)}}>
           {banners?.map((v: any, i: number) => (
-            <TouchableOpacity key={i} style={[styles.boxEvent]}>
+            <View key={i} style={[styles.boxEvent]}>
               <Image
                 source={{
                   uri: v,
                 }}
                 style={{
-                  width: widthScreen,
-                  height: normalize(170),
+                  width: "100%",
+                  height: normalize(150),
                 }}
               />
-            </TouchableOpacity>
+            </View>
           ))}
         </ScrollView>
       </View>
@@ -344,7 +356,7 @@ export default function Home({ navigation }: any) {
           </View>
         </View>
       </View> */}
-      <View style={{ paddingHorizontal: normalize(20) }}>
+      <View style={{paddingHorizontal: normalize(20)}}>
         <TouchableOpacity
           style={styles.boxCard}
           onPress={() => {
@@ -360,7 +372,7 @@ export default function Home({ navigation }: any) {
       </View>
 
       <View
-        style={{ paddingHorizontal: normalize(20), marginTop: normalize(10) }}>
+        style={{paddingHorizontal: normalize(20), marginTop: normalize(10)}}>
         <View
           style={{
             flexDirection: 'row',
@@ -385,7 +397,13 @@ export default function Home({ navigation }: any) {
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', gap: normalize(10), justifyContent: "center", alignItems: "center" }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: normalize(10),
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
         <View
           style={{
             marginBottom: normalize(50),
@@ -403,9 +421,13 @@ export default function Home({ navigation }: any) {
           style={{
             marginBottom: normalize(50),
           }}>
-          <TouchableOpacity style={styles.boxCard2} onPress={() => {
-            Linking.openURL('whatsapp://send?phone=6285863953727&text=Halo admin saya ingin meminta bantuan')
-          }}>
+          <TouchableOpacity
+            style={styles.boxCard2}
+            onPress={() => {
+              Linking.openURL(
+                'whatsapp://send?phone=6285863953727&text=Halo admin saya ingin meminta bantuan',
+              );
+            }}>
             <FA5Icon
               name={'info-circle'}
               size={normalize(20)}
@@ -459,7 +481,9 @@ export default function Home({ navigation }: any) {
               )}
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => { onAddName() }}>
+                onPress={() => {
+                  onAddName();
+                }}>
                 <Text style={styles.textStyle}>Simpan</Text>
               </Pressable>
             </View>
@@ -498,11 +522,12 @@ const styles = StyleSheet.create({
   boxEvent: {
     backgroundColor: COLOR.default,
     width: Dimensions.get('screen').width,
-    height: normalize(170),
+    height: normalize(150),
     borderRadius: 20,
   },
   boxBlue: {
-    backgroundColor: COLOR.default,
+    backgroundColor: "white",
+    elevation:5,
     width: '100%',
     height: normalize(70),
     borderRadius: 10,
@@ -512,7 +537,7 @@ const styles = StyleSheet.create({
   text1: {
     fontSize: normalize(20),
     fontWeight: '400',
-    color: 'white',
+    color: 'black',
   },
   text2: {
     fontSize: normalize(30),

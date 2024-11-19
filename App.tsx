@@ -1,11 +1,11 @@
-import { View, Text } from 'react-native';
+import {View, Text} from 'react-native';
 import React from 'react';
 import Splash from './src/screens/splash';
 import Intro from './src/screens/intro';
 import Home from './src/screens/home';
 import Login from './src/screens/login';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
 import BottomTabs from './src/components/BottomTabs';
 import ConfirmOTP from './src/screens/confirmotp';
 import DetailProduct from './src/screens/product/detail';
@@ -20,6 +20,8 @@ import AboutUs from './src/screens/aboutus';
 import Member from './src/screens/member';
 import History from './src/screens/history';
 import Commision from './src/screens/commision';
+import Performance from './src/screens/performace';
+import CustomerDetail from './src/screens/customer/detail';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +30,9 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Splash"
-        screenOptions={{ headerShown: false }}>
+        screenOptions={{headerShown: false}}>
+        <Stack.Screen name="CustomerDetail" component={CustomerDetail} />
+        <Stack.Screen name="Performance" component={Performance} />
         <Stack.Screen name="Commision" component={Commision} />
         <Stack.Screen name="History" component={History} />
         <Stack.Screen name="Member" component={Member} />

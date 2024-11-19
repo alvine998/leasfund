@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "566122268547",
+    "project_id": "leasfund-1caad",
+    "storage_bucket": "leasfund-1caad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566122268547:android:143393321b934472d158b6",
+        "android_client_info": {
+          "package_name": "com.leasfund"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSIIxYd9_Hxj-MW--g0JHUR2WSkJ0paak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
