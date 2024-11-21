@@ -11,6 +11,7 @@ interface Props {
   number?: boolean;
   isRequired?: boolean;
   label?: string;
+  isReadOnly?: boolean;
 }
 
 export default function Input({
@@ -20,6 +21,7 @@ export default function Input({
   onChange,
   number = false,
   isRequired = false,
+  isReadOnly = false,
   label,
 }: Props) {
   return (
@@ -42,6 +44,7 @@ export default function Input({
         <TextInput
           placeholder={placeholder + (!isRequired ? ' (Opsional)' : '')}
           value={value}
+          readOnly={isReadOnly}
           style={[
             {
               paddingLeft: normalize(20),

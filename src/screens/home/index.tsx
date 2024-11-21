@@ -33,6 +33,7 @@ import {
 import {useFetchData, usePatchData} from '../../hooks/api';
 import {CONFIG} from '../../config';
 import axios from 'axios';
+import NotificationModal from '../../components/modals/NotificationModal';
 
 export default function Home({navigation}: any) {
   const [detail, setDetail] = useState<any>(null);
@@ -180,11 +181,25 @@ export default function Home({navigation}: any) {
 
   const [refresh, setRefresh] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>();
+  const [modalToggle, setModalToggle] = useState<{
+    open: boolean;
+    data?: any;
+    key?: string;
+  }>({open: false, data: null, key: ''});
 
   let banners = [
     'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FBanner%201%20Leasfund%201920x720.png?alt=media&token=709af5a4-1f79-4622-8ecb-1f7dd840786a',
     'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FBanner%202%20Leasfund%201920x720.png?alt=media&token=842b5032-d3e7-4fb3-ba5f-6e53fef54a8c',
     'https://firebasestorage.googleapis.com/v0/b/leasefund.appspot.com/o/card%2FBanner%203%20Leasfund%201920x720.png?alt=media&token=e31e4d37-fd4d-4d1a-ac6e-be884cdd4050',
+  ];
+
+  const notifications = [
+    {
+      id: 1,
+      title: 'Selamat datang pengguna baru',
+      description:
+        'Halo Pengguna baru selamat menikmati layanan kami di leasfund',
+    },
   ];
 
   const onRefresh = () => {
@@ -215,7 +230,15 @@ export default function Home({navigation}: any) {
             Halo, {detail?.name || 'User Leasfund'}
           </Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setModalToggle({
+              ...modalToggle,
+              open: true,
+              data: null,
+              key: 'notification',
+            });
+          }}>
           <FA5Icon name="bell" size={normalize(30)} color={COLOR.darkGrey} />
         </TouchableOpacity>
       </View>
@@ -290,7 +313,7 @@ export default function Home({navigation}: any) {
                   uri: v,
                 }}
                 style={{
-                  width: "100%",
+                  width: '100%',
                   height: normalize(150),
                 }}
               />
@@ -490,6 +513,13 @@ export default function Home({navigation}: any) {
           </View>
         </Modal>
       )}
+      {modalToggle.key == 'notification' && (
+        <NotificationModal
+          modal={modalToggle}
+          notifications={notifications}
+          setModal={setModalToggle}
+        />
+      )}
     </ScrollView>
   );
 }
@@ -526,8 +556,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   boxBlue: {
-    backgroundColor: "white",
-    elevation:5,
+    backgroundColor: 'white',
+    elevation: 5,
     width: '100%',
     height: normalize(70),
     borderRadius: 10,

@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Input from '../../../components/Input';
 import normalize from 'react-native-normalize';
 import BackButton from '../../../components/BackButton';
-import { COLOR } from '../../../utils/color';
+import {COLOR} from '../../../utils/color';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 import Modals from '../../../components/Modal';
 import AddressModal from '../../../components/modals/AddressModal';
@@ -22,23 +22,67 @@ import HouseModal from '../../../components/modals/HouseModal';
 import BpkbModal from '../../../components/modals/BpkbModal';
 import TenorModal from '../../../components/modals/TenorModal';
 import TaxModal from '../../../components/modals/TaxModal';
+import axios from 'axios';
+import {CONFIG} from '../../../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LeasingModal from '../../../components/modals/LeasingModal';
+import LeasingFormModal from '../../../components/modals/LeasingFormModal';
+import TypeModal from '../../../components/modals/TypeModal';
 
-export default function FormSubmission({ navigation }: any) {
+export default function FormSubmission({navigation}: any) {
   const [payload, setPayload] = useState<any>();
   const heightScreen = Dimensions.get('screen').height;
   let steps = ['PROSPECT', 'DETAIL', 'PINJAMAN', 'DOKUMEN', 'KONFIRMASI'];
   const [step, setStep] = useState<any>(['PROSPECT']);
   const [stepIndex, setStepIndex] = useState<number>(0);
-  const [modal, setModal] = useState<{ open: boolean; data?: any; key?: string }>(
-    { open: false, data: null, key: '' },
+  const [modal, setModal] = useState<{open: boolean; data?: any; key?: string}>(
+    {open: false, data: null, key: ''},
   );
+  const [products, setProducts] = useState<any>([]);
   const [selected, setSelected] = useState<any>();
+  const [walkby, setWalkby] = useState<string>('');
 
+  const getProduct = async () => {
+    try {
+      const result = await axios.get(CONFIG.base_url_api + `/product/list`, {
+        headers: CONFIG.headers,
+      });
+      setProducts(result?.data?.items);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    let walkby: any = '';
+    const getStorage = async () => {
+      walkby = await AsyncStorage.getItem('walkby');
+      setWalkby(walkby);
+      if (walkby == 'prospek') {
+        getProduct();
+      }
+    };
+    getStorage();
+  }, []);
   const handleChange = (name: string, e: any) => {
-    setPayload({ ...payload, [name]: e });
+    setPayload({...payload, [name]: e});
   };
 
   let forms = [
+    walkby == 'prospek' && {
+      label: 'Leasing',
+      placeholder: 'Pilih Leasing',
+      value: selected?.leasing_name,
+      required: true,
+      select: true,
+    },
+    walkby == 'prospek' && {
+      label: 'Jenis Kendaraan',
+      placeholder: 'Pilih Jenis Kendaraan',
+      value: selected?.type,
+      required: true,
+      select: true,
+    },
     {
       label: 'Nama Lengkap Pemohon',
       placeholder: 'Nama Lengkap Pemohon',
@@ -260,7 +304,7 @@ export default function FormSubmission({ navigation }: any) {
     },
   ]?.filter((v: any) => v !== false);
   return (
-    <View style={{ flex: 1, height: heightScreen }}>
+    <View style={{flex: 1, height: heightScreen}}>
       <View
         style={{
           backgroundColor: COLOR.darkGreen,
@@ -292,8 +336,8 @@ export default function FormSubmission({ navigation }: any) {
         {steps?.map((val: any, idx: number) => (
           <TouchableOpacity
             onPress={() => {
-              setStepIndex(idx);
-              setStep(steps[idx]);
+              // setStepIndex(idx);
+              // setStep(steps[idx]);
             }}
             key={idx}
             style={{
@@ -301,7 +345,7 @@ export default function FormSubmission({ navigation }: any) {
               alignItems: 'center',
               elevation: 5,
             }}>
-            <Text style={{ color: COLOR.darkGreen, fontSize: normalize(12) }}>
+            <Text style={{color: COLOR.darkGreen, fontSize: normalize(12)}}>
               {val}
             </Text>
             <View
@@ -332,7 +376,7 @@ export default function FormSubmission({ navigation }: any) {
         {/* Prospect */}
         {stepIndex == 0 && (
           <View>
-            <View style={{ paddingHorizontal: normalize(20) }}>
+            <View style={{paddingHorizontal: normalize(20)}}>
               {forms?.map((v: any, i: number) => (
                 <View key={i}>
                   {v?.input && (
@@ -346,18 +390,19 @@ export default function FormSubmission({ navigation }: any) {
                     />
                   )}
                   {v?.select && (
-                    <View style={{ marginTop: normalize(20) }}>
+                    <View style={{marginTop: normalize(20)}}>
                       <Text
                         style={{
                           fontSize: normalize(18),
                           color: 'black',
                           marginLeft: normalize(10),
+                          fontWeight: 'bold',
                         }}>
                         {v?.label}
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          setModal({ ...modal, open: true, key: v?.label });
+                          setModal({...modal, open: true, key: v?.label});
                         }}
                         style={{
                           width: '100%',
@@ -369,8 +414,9 @@ export default function FormSubmission({ navigation }: any) {
                           justifyContent: 'space-between',
                           alignItems: 'center',
                           flexDirection: 'row',
+                          marginTop: normalize(5),
                         }}>
-                        <Text style={{ color: COLOR.darkGrey }}>
+                        <Text style={{color: COLOR.darkGrey}}>
                           {v?.value || v?.label}
                         </Text>
                         <FA5Icon
@@ -381,7 +427,7 @@ export default function FormSubmission({ navigation }: any) {
                       </TouchableOpacity>
 
                       {selected?.address_value == 'diff_ktp' &&
-                        v?.label == 'Alamat Tinggal' ? (
+                      v?.label == 'Alamat Tinggal' ? (
                         <View>
                           <Text
                             style={{
@@ -411,7 +457,7 @@ export default function FormSubmission({ navigation }: any) {
                                 flexDirection: 'row',
                                 gap: normalize(10),
                               }}>
-                              <View style={{ width: '49%' }}>
+                              <View style={{width: '49%'}}>
                                 <Input
                                   placeholder={'RT'}
                                   value={payload?.address}
@@ -420,7 +466,7 @@ export default function FormSubmission({ navigation }: any) {
                                   isRequired
                                 />
                               </View>
-                              <View style={{ width: '49%' }}>
+                              <View style={{width: '49%'}}>
                                 <Input
                                   placeholder={'RW'}
                                   value={payload?.address}
@@ -430,7 +476,7 @@ export default function FormSubmission({ navigation }: any) {
                                 />
                               </View>
                             </View>
-                            <View style={{ marginTop: normalize(20) }}>
+                            <View style={{marginTop: normalize(20)}}>
                               <Text
                                 style={{
                                   fontSize: normalize(18),
@@ -458,7 +504,7 @@ export default function FormSubmission({ navigation }: any) {
                                   alignItems: 'center',
                                   flexDirection: 'row',
                                 }}>
-                                <Text style={{ color: COLOR.darkGrey }}>
+                                <Text style={{color: COLOR.darkGrey}}>
                                   {selected?.district_name || 'kecamatan'}
                                 </Text>
                                 <FA5Icon
@@ -475,7 +521,7 @@ export default function FormSubmission({ navigation }: any) {
                       )}
 
                       {selected?.marrital_value == 'married' &&
-                        v?.label == 'Status Pernikahan' ? (
+                      v?.label == 'Status Pernikahan' ? (
                         <View>
                           <Text
                             style={{
@@ -497,18 +543,18 @@ export default function FormSubmission({ navigation }: any) {
                             <Input
                               placeholder={'Nama Pasangan'}
                               value={payload?.couple_name}
-                              onChange={() => { }}
+                              onChange={() => {}}
                               label="Nama Pasangan"
                               isRequired
                             />
                             <Input
                               placeholder={'No Whatsapp'}
                               value={payload?.couple_phone}
-                              onChange={() => { }}
+                              onChange={() => {}}
                               label="No Whatsapp"
                               isRequired
                             />
-                            <View style={{ marginTop: normalize(20) }}>
+                            <View style={{marginTop: normalize(20)}}>
                               <Text
                                 style={{
                                   fontSize: normalize(18),
@@ -536,7 +582,7 @@ export default function FormSubmission({ navigation }: any) {
                                   alignItems: 'center',
                                   flexDirection: 'row',
                                 }}>
-                                <Text style={{ color: COLOR.darkGrey }}>
+                                <Text style={{color: COLOR.darkGrey}}>
                                   {selected?.couple_occupation_name ||
                                     'Pekerjaan Pasangan'}
                                 </Text>
@@ -573,7 +619,7 @@ export default function FormSubmission({ navigation }: any) {
               }}>
               Data Keluarga yang Tidak Serumah
             </Text>
-            <View style={{ paddingHorizontal: normalize(20) }}>
+            <View style={{paddingHorizontal: normalize(20)}}>
               {forms2?.map((v: any, i: number) => (
                 <View key={i}>
                   {v?.input && (
@@ -587,7 +633,7 @@ export default function FormSubmission({ navigation }: any) {
                     />
                   )}
                   {v?.select && (
-                    <View style={{ marginTop: normalize(20) }}>
+                    <View style={{marginTop: normalize(20)}}>
                       <Text
                         style={{
                           fontSize: normalize(18),
@@ -598,7 +644,7 @@ export default function FormSubmission({ navigation }: any) {
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          setModal({ ...modal, open: true, key: v?.label });
+                          setModal({...modal, open: true, key: v?.label});
                         }}
                         style={{
                           width: '100%',
@@ -611,7 +657,7 @@ export default function FormSubmission({ navigation }: any) {
                           alignItems: 'center',
                           flexDirection: 'row',
                         }}>
-                        <Text style={{ color: COLOR.darkGrey }}>
+                        <Text style={{color: COLOR.darkGrey}}>
                           {v?.value || v?.label}
                         </Text>
                         <FA5Icon
@@ -641,7 +687,7 @@ export default function FormSubmission({ navigation }: any) {
               }}>
               *Data Kendaraan
             </Text>
-            <View style={{ paddingHorizontal: normalize(20) }}>
+            <View style={{paddingHorizontal: normalize(20)}}>
               {forms3?.map((v: any, i: number) => (
                 <View key={i}>
                   {v?.input && (
@@ -655,7 +701,7 @@ export default function FormSubmission({ navigation }: any) {
                     />
                   )}
                   {v?.select && (
-                    <View style={{ marginTop: normalize(20) }}>
+                    <View style={{marginTop: normalize(20)}}>
                       <Text
                         style={{
                           fontSize: normalize(18),
@@ -666,7 +712,7 @@ export default function FormSubmission({ navigation }: any) {
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          setModal({ ...modal, open: true, key: v?.label });
+                          setModal({...modal, open: true, key: v?.label});
                         }}
                         style={{
                           width: '100%',
@@ -679,7 +725,7 @@ export default function FormSubmission({ navigation }: any) {
                           alignItems: 'center',
                           flexDirection: 'row',
                         }}>
-                        <Text style={{ color: COLOR.darkGrey }}>
+                        <Text style={{color: COLOR.darkGrey}}>
                           {v?.value || v?.label}
                         </Text>
                         <FA5Icon
@@ -709,7 +755,7 @@ export default function FormSubmission({ navigation }: any) {
               }}>
               *Data Dokumen
             </Text>
-            <View style={{ paddingHorizontal: normalize(20) }}>
+            <View style={{paddingHorizontal: normalize(20)}}>
               {formsDoc?.map((v: any, i: number) => (
                 <View key={i}>
                   {v?.input && (
@@ -723,7 +769,7 @@ export default function FormSubmission({ navigation }: any) {
                     />
                   )}
                   {v?.select && (
-                    <View style={{ marginTop: normalize(20) }}>
+                    <View style={{marginTop: normalize(20)}}>
                       <Text
                         style={{
                           fontSize: normalize(18),
@@ -734,7 +780,7 @@ export default function FormSubmission({ navigation }: any) {
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          setModal({ ...modal, open: true, key: v?.label });
+                          setModal({...modal, open: true, key: v?.label});
                         }}
                         style={{
                           width: '100%',
@@ -747,7 +793,7 @@ export default function FormSubmission({ navigation }: any) {
                           alignItems: 'center',
                           flexDirection: 'row',
                         }}>
-                        <Text style={{ color: COLOR.darkGrey }}>
+                        <Text style={{color: COLOR.darkGrey}}>
                           {v?.value || v?.label}
                         </Text>
                         <FA5Icon
@@ -809,11 +855,11 @@ export default function FormSubmission({ navigation }: any) {
                     }}
                     key={i}>
                     <Text
-                      style={{ fontSize: normalize(15), color: COLOR.darkGrey }}>
+                      style={{fontSize: normalize(15), color: COLOR.darkGrey}}>
                       {v?.label}
                     </Text>
                     <Text
-                      style={{ fontSize: normalize(15), color: COLOR.darkGrey }}>
+                      style={{fontSize: normalize(15), color: COLOR.darkGrey}}>
                       : {v?.value}
                     </Text>
                   </View>
@@ -825,11 +871,34 @@ export default function FormSubmission({ navigation }: any) {
 
         {/* Modal Provider */}
         {/* Prospect Modal */}
+        {modal.key == 'Leasing' && (
+          <LeasingFormModal
+            options={products}
+            modal={modal}
+            selected={selected}
+            setModal={setModal}
+            setSelected={setSelected}
+          />
+        )}
+
+        {modal.key == 'Jenis Kendaraan' && (
+          <TypeModal
+            options={[
+              {value: 'car', name: 'Mobil'},
+              {value: 'motor', name: 'Motor'},
+            ]}
+            modal={modal}
+            selected={selected}
+            setModal={setModal}
+            setSelected={setSelected}
+          />
+        )}
+
         {modal.key == 'Alamat Tinggal' && (
           <AddressModal
             options={[
-              { value: 'ktp', name: 'Sesuai KTP' },
-              { value: 'diff_ktp', name: 'Beda KTP' },
+              {value: 'ktp', name: 'Sesuai KTP'},
+              {value: 'diff_ktp', name: 'Beda KTP'},
             ]}
             modal={modal}
             selected={selected}
@@ -841,9 +910,9 @@ export default function FormSubmission({ navigation }: any) {
         {modal.key == 'Status Pernikahan' && (
           <MarritalModal
             options={[
-              { value: 'married', name: 'Menikah' },
-              { value: 'single', name: 'Belum Menikah' },
-              { value: 'divorce', name: 'Cerai' },
+              {value: 'married', name: 'Menikah'},
+              {value: 'single', name: 'Belum Menikah'},
+              {value: 'divorce', name: 'Cerai'},
             ]}
             modal={modal}
             selected={selected}
@@ -855,8 +924,8 @@ export default function FormSubmission({ navigation }: any) {
         {modal.key == 'Pekerjaan Pemohon' && (
           <OccupationModal
             options={[
-              { value: 'staff', name: 'Karyawan' },
-              { value: 'entrepreneur', name: 'Wirausaha' },
+              {value: 'staff', name: 'Karyawan'},
+              {value: 'entrepreneur', name: 'Wirausaha'},
             ]}
             modal={modal}
             selected={selected}
@@ -868,9 +937,9 @@ export default function FormSubmission({ navigation }: any) {
         {modal.key == 'Pekerjaan Pasangan' && (
           <OccupationModal
             options={[
-              { value: 'staff', name: 'Karyawan' },
-              { value: 'entrepreneur', name: 'Wirausaha' },
-              { value: 'housewife', name: 'Ibu Rumah Tangga' },
+              {value: 'staff', name: 'Karyawan'},
+              {value: 'entrepreneur', name: 'Wirausaha'},
+              {value: 'housewife', name: 'Ibu Rumah Tangga'},
             ]}
             modal={modal}
             selected={selected}
@@ -882,9 +951,9 @@ export default function FormSubmission({ navigation }: any) {
         {modal.key == 'Status Rumah Tinggal Sekarang' && (
           <HouseModal
             options={[
-              { value: 'self', name: 'Sendiri' },
-              { value: 'rent', name: 'Kontrakan' },
-              { value: 'mess', name: 'Mess' },
+              {value: 'self', name: 'Sendiri'},
+              {value: 'rent', name: 'Kontrakan'},
+              {value: 'mess', name: 'Mess'},
             ]}
             modal={modal}
             selected={selected}
@@ -907,8 +976,8 @@ export default function FormSubmission({ navigation }: any) {
         {modal.key == 'BPKB Atas Nama' && (
           <BpkbModal
             options={[
-              { value: 'self', name: 'Sendiri' },
-              { value: 'other', name: 'Orang Lain' },
+              {value: 'self', name: 'Sendiri'},
+              {value: 'other', name: 'Orang Lain'},
             ]}
             modal={modal}
             selected={selected}
@@ -920,8 +989,8 @@ export default function FormSubmission({ navigation }: any) {
         {modal.key == 'Status Pajak STNK' && (
           <TaxModal
             options={[
-              { value: '1', name: 'Hidup' },
-              { value: '0', name: 'Mati' },
+              {value: '1', name: 'Hidup'},
+              {value: '0', name: 'Mati'},
             ]}
             title={'Status Pajak STNK'}
             modal={modal}
@@ -934,8 +1003,8 @@ export default function FormSubmission({ navigation }: any) {
         {modal.key == 'Status Pajak Plat Nomor' && (
           <TaxModal
             options={[
-              { value: '1', name: 'Hidup' },
-              { value: '0', name: 'Mati' },
+              {value: '1', name: 'Hidup'},
+              {value: '0', name: 'Mati'},
             ]}
             title={'Status Pajak Plat Nomor'}
             modal={modal}
@@ -948,13 +1017,13 @@ export default function FormSubmission({ navigation }: any) {
         {modal.key == 'Tenor' && (
           <TenorModal
             options={[
-              { value: '6', name: '6 Bulan' },
-              { value: '12', name: '12 Bulan' },
-              { value: '18', name: '18 Bulan' },
-              { value: '24', name: '24 Bulan' },
-              { value: '30', name: '30 Bulan' },
-              { value: '36', name: '36 Bulan' },
-              { value: '48', name: '48 Bulan' },
+              {value: '6', name: '6 Bulan'},
+              {value: '12', name: '12 Bulan'},
+              {value: '18', name: '18 Bulan'},
+              {value: '24', name: '24 Bulan'},
+              {value: '30', name: '30 Bulan'},
+              {value: '36', name: '36 Bulan'},
+              {value: '48', name: '48 Bulan'},
             ]}
             modal={modal}
             selected={selected}
@@ -965,7 +1034,7 @@ export default function FormSubmission({ navigation }: any) {
         <View
           style={{
             paddingHorizontal: normalize(20),
-            marginBottom: normalize(50),
+            marginBottom: stepIndex == 0 ? normalize(50) : normalize(0),
             marginTop: normalize(20),
           }}>
           <TouchableOpacity
@@ -982,13 +1051,12 @@ export default function FormSubmission({ navigation }: any) {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text style={{ color: 'white', fontSize: normalize(20) }}>
+            <Text style={{color: 'white', fontSize: normalize(20)}}>
               {stepIndex == 3 ? 'Ajukan Pemohon' : 'Selanjutnya'}
             </Text>
           </TouchableOpacity>
         </View>
-        {
-          stepIndex !== 0 &&
+        {stepIndex !== 0 && (
           <View
             style={{
               paddingHorizontal: normalize(20),
@@ -997,9 +1065,9 @@ export default function FormSubmission({ navigation }: any) {
             }}>
             <TouchableOpacity
               onPress={() => {
-                const newStep = stepIndex + 1;
+                const newStep = stepIndex - 1;
                 setStepIndex(newStep);
-                setStep([...step, steps[newStep]]);
+                setStep(step?.filter((v:any) => v !== steps[newStep]));
               }}
               style={{
                 backgroundColor: COLOR.red,
@@ -1009,12 +1077,12 @@ export default function FormSubmission({ navigation }: any) {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text style={{ color: 'white', fontSize: normalize(20) }}>
+              <Text style={{color: 'white', fontSize: normalize(20)}}>
                 Sebelumnya
               </Text>
             </TouchableOpacity>
           </View>
-        }
+        )}
       </ScrollView>
     </View>
   );

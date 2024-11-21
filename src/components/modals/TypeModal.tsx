@@ -48,18 +48,6 @@ export default function TypeModal({
         </TouchableOpacity>
       </View>
 
-      <View style={{width: '100%'}}>
-        <Input
-          onChange={(e: any) => {
-            setData(data?.filter((v:any) => v?.name?.includes(e)));
-            setSearch(e)
-          }}
-          placeholder={'Cari disini...'}
-          isRequired
-          value={search}
-          style={{width: '100%'}}
-        />
-      </View>
       <ScrollView
         style={{
           height: normalize(350),

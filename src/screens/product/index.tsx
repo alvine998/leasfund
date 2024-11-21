@@ -1,44 +1,50 @@
 import {
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import normalize from 'react-native-normalize';
 import {COLOR} from '../../utils/color';
+import axios from 'axios';
+import {CONFIG} from '../../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Product({navigation}: any) {
-  let products = [
-    {
-      id: 1,
-      name: 'BFI',
-      icon: '',
-      description: 'Leasing motor & mobil cepat cair kurang dari 2 jam',
-    },
-    {
-      id: 2,
-      name: 'BAF',
-      icon: '',
-      description: 'Leasing motor & mobil cepat cair kurang dari 2 jam',
-    },
-    {
-      id: 3,
-      name: 'Prabu',
-      icon: '',
-      description: 'Leasing motor & mobil cepat cair kurang dari 2 jam',
-    },
-    {
-      id: 4,
-      name: 'LeaseFund',
-      icon: '',
-      description: 'Leasing motor & mobil cepat cair kurang dari 2 jam',
-    },
-  ];
+  const [products, setProducts] = useState<any>([]);
+  const getProduct = async () => {
+    try {
+      const result = await axios.get(CONFIG.base_url_api + `/product/list`, {
+        headers: CONFIG.headers,
+      });
+      setProducts(result?.data?.items);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getProduct();
+  }, []);
+  const [refresh, setRefresh] = useState<boolean>(false);
+  const onRefresh = () => {
+    setRefresh(true);
+    setTimeout(() => {
+      getProduct();
+      setRefresh(false);
+    }, 2000);
+  };
+
   return (
-    <ScrollView style={{padding: normalize(20)}}>
+    <ScrollView
+      refreshControl={
+        <RefreshControl onRefresh={onRefresh} refreshing={refresh} />
+      }
+      style={{padding: normalize(20)}}>
       <Text
         style={{color: 'black', fontSize: normalize(20), textAlign: 'center'}}>
         Mitra Produk Kami
@@ -48,6 +54,11 @@ export default function Product({navigation}: any) {
           <TouchableOpacity
             key={i}
             onPress={() => {
+              AsyncStorage.setItem('walkby', 'product');
+              AsyncStorage.setItem(
+                'leasing',
+                JSON.stringify({id: v?.id, name: v?.name}),
+              );
               navigation.navigate('DetailProduct');
             }}
             style={{
@@ -66,14 +77,22 @@ export default function Product({navigation}: any) {
               <Text style={{fontSize: normalize(20), color: 'black'}}>
                 {v?.name}
               </Text>
-              <Text style={{fontSize: normalize(14), color: 'black', width: normalize(200)}}>
+              <Text
+                style={{
+                  fontSize: normalize(14),
+                  color: 'black',
+                  width: normalize(200),
+                }}>
                 {v?.description}
               </Text>
             </View>
-            <View>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <Image
-                source={require('../../assets/images/logo_icon.png')}
-                style={{width: normalize(50), height: normalize(50)}}
+                source={{uri: v?.logo}}
+                style={{
+                  width: v?.code == 'ADIRA01' ? normalize(100) : normalize(50),
+                  height: v?.code == 'ADIRA01' ? normalize(25) : normalize(50),
+                }}
               />
               <Text
                 style={{

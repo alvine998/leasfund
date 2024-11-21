@@ -15,6 +15,7 @@ import Input from '../../components/Input';
 import {PieChart} from 'react-native-chart-kit';
 import moment from 'moment';
 import DateModal from '../../components/modals/DateModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Customer({navigation}: any) {
   const screenWidth = Dimensions.get('screen').width;
@@ -478,7 +479,10 @@ export default function Customer({navigation}: any) {
           alignItems: 'center',
         }}>
         <TouchableOpacity
-          onPress={()=>{navigation.navigate("Product")}}
+          onPress={() => {
+            AsyncStorage.setItem('walkby', 'prospek');
+            navigation.navigate('Product');
+          }}
           style={{
             width: '100%',
             backgroundColor: COLOR.default,
@@ -493,7 +497,7 @@ export default function Customer({navigation}: any) {
             style={{
               color: 'white',
               fontSize: normalize(18),
-              fontWeight:"bold"
+              fontWeight: 'bold',
             }}>
             Tambah Prospek
           </Text>

@@ -194,6 +194,8 @@ export default function EditProfile({navigation}: any) {
                 setData({...data, name: e});
               }}
               label="Nama"
+              isReadOnly
+              style={{backgroundColor: "#dfdfdf", padding: normalize(20)}}
             />
 
             <Input
@@ -212,6 +214,7 @@ export default function EditProfile({navigation}: any) {
                 setData({...data, phone: e});
               }}
               label="No Telepon"
+              isReadOnly
             />
 
             <Text

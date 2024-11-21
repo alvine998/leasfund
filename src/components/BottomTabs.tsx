@@ -8,6 +8,7 @@ import Product from '../screens/product';
 import {Text, TouchableOpacity, View} from 'react-native';
 import {COLOR} from '../utils/color';
 import normalize from 'react-native-normalize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,6 +21,7 @@ export default function BottomTabs({navigation}: any) {
         alignItems: 'center',
       }}
       onPress={() => {
+        AsyncStorage.setItem('walkby', 'prospek');
         navigation.navigate('FormSubmission');
       }}>
       <View
