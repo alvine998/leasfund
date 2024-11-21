@@ -1,29 +1,143 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import normalize from 'react-native-normalize'
-import BackButton from '../../components/BackButton'
-import { COLOR } from '../../utils/color'
-import FA5Icon from 'react-native-vector-icons/FontAwesome5'
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React from 'react';
+import normalize from 'react-native-normalize';
+import BackButton from '../../components/BackButton';
+import {COLOR} from '../../utils/color';
+import FA5Icon from 'react-native-vector-icons/FontAwesome5';
+import moment from 'moment';
+import Input from '../../components/Input';
 
-export default function History({ navigation }: any) {
+export default function History({navigation}: any) {
   return (
-    <View style={{ padding: normalize(20) }}>
-      <BackButton navigation={navigation} />
-      <Text style={{ fontSize: normalize(24), color: "black", textAlign: "center", marginTop: normalize(20) }}>Riwayat Prospek</Text>
-      <ScrollView style={{ backgroundColor: "white", elevation: 5, marginTop: normalize(30), borderRadius: 10, padding: normalize(20), height: normalize(600) }}>
-        <TouchableOpacity style={{ width: "100%", flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
+    <View style={{padding: normalize(20)}}>
+      <Text
+        style={{
+          fontSize: normalize(24),
+          color: 'black',
+          textAlign: 'center',
+          marginTop: normalize(20),
+        }}>
+        Riwayat Prospek
+      </Text>
+      <Input
+        onChange={(e: any)=>{}}
+        placeholder={"Cari prospek..."}
+        value={''}
+        isRequired
+      />
+      <ScrollView
+        style={{
+          backgroundColor: 'white',
+          elevation: 5,
+          marginTop: normalize(30),
+          borderRadius: 10,
+          padding: normalize(20),
+        }}>
+        <View
+          style={{
+            width: '100%',
+          }}>
           <View>
-            <Text style={{ color: COLOR.darkGrey, fontSize: normalize(24) }}>Nanang Sumarna</Text>
-            <Text style={{ color: COLOR.red, fontWeight: "bold" }}>Rp 50.000.000</Text>
+            <Text
+              style={{
+                color: COLOR.default,
+                fontSize: normalize(18),
+                fontWeight: 'bold',
+              }}>
+              Pencairan
+            </Text>
+            <Text style={{color: COLOR.darkGrey, fontSize: normalize(14)}}>
+              {moment().format('DD-MM-YYYY HH:mm:ss')}
+            </Text>
           </View>
-          <View>
-            <FA5Icon name='car' size={normalize(50)} color={COLOR.blue} />
-            <FA5Icon name='circle' size={normalize(20)} color={COLOR.yellow} style={{backgroundColor:COLOR.yellow}} />
+          <Text
+            style={{
+              color: 'black',
+              fontSize: normalize(24),
+              fontWeight: 'bold',
+              marginTop: normalize(10),
+            }}>
+            Nanang Sumarna
+          </Text>
+          <View style={{marginTop: normalize(20)}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: COLOR.darkGrey,
+                  fontSize: normalize(18),
+                }}>
+                Leasing
+              </Text>
+              <Text
+                style={{
+                  color: 'black',
+                  fontSize: normalize(18),
+                  fontWeight: 'bold',
+                }}>
+                BFI
+              </Text>
+            </View>
           </View>
-        </TouchableOpacity>
+
+          <View style={{marginTop: normalize(10)}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: COLOR.darkGrey,
+                  fontSize: normalize(18),
+                }}>
+                Nominal Pinjaman
+              </Text>
+              <Text
+                style={{
+                  color: 'black',
+                  fontSize: normalize(18),
+                  fontWeight: 'bold',
+                }}>
+                Rp 40.000.000
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: COLOR.default,
+              height: normalize(40),
+              width: '100%',
+              borderRadius: 10,
+              justifyContent:"center",
+              alignItems:"center",
+              marginTop: normalize(20)
+            }}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: normalize(18),
+                fontWeight: 'bold',
+              }}>
+              Cek Aplikasi
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
-  )
+  );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

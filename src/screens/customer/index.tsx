@@ -21,7 +21,7 @@ export default function Customer({navigation}: any) {
   const screenWidth = Dimensions.get('screen').width;
   const [selected, setSelected] = useState<string>('all');
   const [date, setDate] = useState<{start: string; end: string}>({
-    start: moment().subtract('M', 1).format('DD-MM-YYYY'),
+    start: moment().subtract(1, 'M').format('DD-MM-YYYY'),
     end: moment().format('DD-MM-YYYY'),
   });
   const [modal, setModal] = useState<{open: boolean; data?: any; key?: string}>(

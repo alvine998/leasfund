@@ -9,6 +9,7 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import {COLOR} from '../utils/color';
 import normalize from 'react-native-normalize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import History from '../screens/history';
 
 const Tab = createBottomTabNavigator();
 
@@ -78,7 +79,7 @@ export default function BottomTabs({navigation}: any) {
       />
       <Tab.Screen
         name="BottomHistory"
-        component={Home}
+        component={History}
         options={{
           tabBarLabel: 'Riwayat',
           tabBarIcon: ({color, size}) => (
