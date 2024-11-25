@@ -101,6 +101,7 @@ export default function Home({navigation}: any) {
     if (result?.data?.items[0] == '') {
       setModal(true);
     }
+    await AsyncStorage.setItem('login', JSON.stringify(result?.data?.items?.[0]))
   };
   const [backPressCount, setBackPressCount] = useState<number>(0);
 

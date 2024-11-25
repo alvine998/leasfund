@@ -1,12 +1,13 @@
 import {
   Dimensions,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import normalize from 'react-native-normalize';
 import BackButton from '../../components/BackButton';
 import {COLOR} from '../../utils/color';
@@ -16,6 +17,8 @@ import {PieChart} from 'react-native-chart-kit';
 import moment from 'moment';
 import DateModal from '../../components/modals/DateModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {CONFIG} from '../../config';
 
 export default function Customer({navigation}: any) {
   const screenWidth = Dimensions.get('screen').width;
@@ -24,6 +27,25 @@ export default function Customer({navigation}: any) {
     start: moment().subtract(1, 'M').format('DD-MM-YYYY'),
     end: moment().format('DD-MM-YYYY'),
   });
+  const [customers, setCustomers] = useState<any>([]);
+  const getData = async () => {
+    try {
+      const user: any = await AsyncStorage.getItem('login');
+      const result = await axios.get(
+        CONFIG.base_url_api +
+          `/transaction/list?user_uuid=${JSON.parse(user)?.uuid}`,
+        {
+          headers: CONFIG.headers,
+        },
+      );
+      setCustomers(result?.data?.items);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getData();
+  }, []);
   const [modal, setModal] = useState<{open: boolean; data?: any; key?: string}>(
     {open: false, data: null, key: ''},
   );
@@ -76,10 +98,23 @@ export default function Customer({navigation}: any) {
     {value: 'rejected', label: 'Ditolak'},
     {value: 'cancelled', label: 'Dibatalkan'},
   ];
+
+  const [refresh, setRefresh] = useState<boolean>(false);
+  const onRefresh = () => {
+    setRefresh(true);
+    setTimeout(() => {
+      getData();
+      setRefresh(false);
+    }, 2000);
+  };
   return (
     <View style={{padding: normalize(20)}}>
       <BackButton navigation={navigation} />
-      <ScrollView horizontal={false}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl onRefresh={onRefresh} refreshing={refresh} />
+        }
+        horizontal={false}>
         <View
           style={{
             marginTop: normalize(20),
@@ -183,295 +218,134 @@ export default function Customer({navigation}: any) {
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <View style={{paddingBottom: normalize(50)}}>
-          <View
-            style={{
-              width: '100%',
-              backgroundColor: 'white',
-              elevation: 5,
-              marginTop: normalize(10),
-              borderRadius: 10,
-              paddingBottom: normalize(20),
-            }}>
+        {customers?.map((val: any, idx: number) => (
+          <TouchableOpacity
+            key={idx}
+            onPress={() => {
+              if (val?.status == 1) {
+                AsyncStorage.setItem(
+                  'continue',
+                  JSON.stringify({
+                    customer_uuid: val?.customer_uuid,
+                    customer_name: val?.customer_name,
+                    leasing_uuid: val?.leasing_uuid,
+                    leasing_name: val?.leasing_name,
+                  }),
+                );
+                navigation.navigate('FormSubmission');
+              }
+            }}
+            style={{paddingBottom: normalize(50)}}>
             <View
               style={{
-                borderBottomWidth: 2,
+                width: '100%',
+                backgroundColor: 'white',
+                elevation: 5,
                 marginTop: normalize(10),
-                borderBottomColor: COLOR.gray,
-                paddingBottom: normalize(10),
-                paddingHorizontal: normalize(20),
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexDirection: 'row',
+                borderRadius: 10,
+                paddingBottom: normalize(20),
               }}>
               <View
                 style={{
-                  padding: normalize(10),
-                  backgroundColor: COLOR.yellow,
-                  borderRadius: 20,
-                  width: normalize(100),
-                  justifyContent: 'center',
+                  borderBottomWidth: 2,
+                  marginTop: normalize(10),
+                  borderBottomColor: COLOR.gray,
+                  paddingBottom: normalize(10),
+                  paddingHorizontal: normalize(20),
+                  justifyContent: 'space-between',
                   alignItems: 'center',
+                  flexDirection: 'row',
                 }}>
-                <Text style={{color: 'black', fontWeight: 'bold'}}>
-                  Processed
-                </Text>
+                {val?.status !== 1 && (
+                  <View>
+                    <View
+                      style={{
+                        padding: normalize(10),
+                        backgroundColor: COLOR.yellow,
+                        borderRadius: 20,
+                        width: normalize(100),
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Text style={{color: 'black', fontWeight: 'bold'}}>
+                        {val?.status !== 1 ? 'Menunggu' : 'Processed'}
+                      </Text>
+                    </View>
+                    <View>
+                      <FA5Icon
+                        name="car"
+                        color={'black'}
+                        size={normalize(30)}
+                      />
+                    </View>
+                  </View>
+                )}
               </View>
-              <View>
-                <FA5Icon name="car" color={'black'} size={normalize(30)} />
-              </View>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                padding: normalize(10),
-                paddingHorizontal: normalize(20),
-              }}>
-              <View>
-                <Text style={{color: COLOR.darkGrey, fontSize: normalize(20)}}>
-                  Nanang Sumarna
-                </Text>
-                <Text style={{color: COLOR.red, fontWeight: 'bold'}}>
-                  Rp 50.000.000
-                </Text>
-                <View
-                  style={{
-                    marginTop: normalize(10),
-                    flexDirection: 'row',
-                    gap: normalize(10),
-                    alignItems: 'center',
-                  }}>
-                  <View
-                    style={{
-                      width: normalize(15),
-                      height: normalize(15),
-                      borderRadius: 20,
-                      backgroundColor: COLOR.yellow,
-                    }}
-                  />
-                  <Text style={{color: 'black'}}>Yellow</Text>
-                </View>
-              </View>
-              <View>
-                <Text style={{color: COLOR.darkGrey}}>18-10-2024</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('CustomerDetail');
-                  }}
-                  style={{
-                    backgroundColor: COLOR.default,
-                    padding: normalize(10),
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 10,
-                    marginTop: normalize(10),
-                  }}>
-                  <Text style={{color: 'white', fontWeight: 'bold'}}>
-                    Detail
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-          <View
-            style={{
-              width: '100%',
-              backgroundColor: 'white',
-              elevation: 5,
-              marginTop: normalize(10),
-              borderRadius: 10,
-              paddingBottom: normalize(20),
-            }}>
-            <View
-              style={{
-                borderBottomWidth: 2,
-                marginTop: normalize(10),
-                borderBottomColor: COLOR.gray,
-                paddingBottom: normalize(10),
-                paddingHorizontal: normalize(20),
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexDirection: 'row',
-              }}>
               <View
                 style={{
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
                   padding: normalize(10),
-                  backgroundColor: COLOR.yellow,
-                  borderRadius: 20,
-                  width: normalize(100),
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  paddingHorizontal: normalize(20),
                 }}>
-                <Text style={{color: 'black', fontWeight: 'bold'}}>
-                  Processed
-                </Text>
-              </View>
-              <View>
-                <FA5Icon
-                  name="motorcycle"
-                  color={'black'}
-                  size={normalize(30)}
-                />
-              </View>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                padding: normalize(10),
-                paddingHorizontal: normalize(20),
-              }}>
-              <View>
-                <Text style={{color: COLOR.darkGrey, fontSize: normalize(20)}}>
-                  Nanang Sumarna
-                </Text>
-                <Text style={{color: COLOR.red, fontWeight: 'bold'}}>
-                  Rp 50.000.000
-                </Text>
-                <View
-                  style={{
-                    marginTop: normalize(10),
-                    flexDirection: 'row',
-                    gap: normalize(10),
-                    alignItems: 'center',
-                  }}>
-                  <View
-                    style={{
-                      width: normalize(15),
-                      height: normalize(15),
-                      borderRadius: 20,
-                      backgroundColor: COLOR.red,
-                    }}
-                  />
-                  <Text style={{color: 'black'}}>Red</Text>
+                <View>
+                  <Text
+                    style={{color: COLOR.darkGrey, fontSize: normalize(20)}}>
+                    {val?.customer_name}
+                  </Text>
+                  <Text style={{color: COLOR.red, fontWeight: 'bold'}}>
+                    {val?.loan_amount || '-'}
+                  </Text>
+                  {val?.status !== 1 && (
+                    <View
+                      style={{
+                        marginTop: normalize(10),
+                        flexDirection: 'row',
+                        gap: normalize(10),
+                        alignItems: 'center',
+                      }}>
+                      <View
+                        style={{
+                          width: normalize(15),
+                          height: normalize(15),
+                          borderRadius: 20,
+                          backgroundColor: COLOR.yellow,
+                        }}
+                      />
+                      <Text style={{color: 'black'}}>Yellow</Text>
+                    </View>
+                  )}
+                </View>
+                <View>
+                  <Text style={{color: COLOR.darkGrey}}>
+                    {moment(val?.created_at).format('DD-MM-YYYY')}
+                  </Text>
+                  {val?.status == 1 ? (
+                    <View />
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate('CustomerDetail');
+                      }}
+                      style={{
+                        backgroundColor: COLOR.default,
+                        padding: normalize(10),
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 10,
+                        marginTop: normalize(10),
+                      }}>
+                      <Text style={{color: 'white', fontWeight: 'bold'}}>
+                        Detail
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               </View>
-              <View>
-                <Text style={{color: COLOR.darkGrey}}>18-10-2024</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('CustomerDetail');
-                  }}
-                  style={{
-                    backgroundColor: COLOR.default,
-                    padding: normalize(10),
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 10,
-                    marginTop: normalize(10),
-                  }}>
-                  <Text style={{color: 'white', fontWeight: 'bold'}}>
-                    Detail
-                  </Text>
-                </TouchableOpacity>
-              </View>
             </View>
-          </View>
-
-          <View
-            style={{
-              width: '100%',
-              backgroundColor: 'white',
-              elevation: 5,
-              marginTop: normalize(10),
-              borderRadius: 10,
-              paddingBottom: normalize(50),
-            }}>
-            <View
-              style={{
-                borderBottomWidth: 2,
-                marginTop: normalize(10),
-                borderBottomColor: COLOR.gray,
-                paddingBottom: normalize(10),
-                paddingHorizontal: normalize(20),
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexDirection: 'row',
-              }}>
-              <View
-                style={{
-                  padding: normalize(10),
-                  backgroundColor: COLOR.yellow,
-                  borderRadius: 20,
-                  width: normalize(100),
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Text style={{color: 'black', fontWeight: 'bold'}}>
-                  Processed
-                </Text>
-              </View>
-              <View>
-                <FA5Icon name="car" color={'black'} size={normalize(30)} />
-              </View>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                padding: normalize(10),
-                paddingHorizontal: normalize(20),
-              }}>
-              <View>
-                <Text style={{color: COLOR.darkGrey, fontSize: normalize(20)}}>
-                  Nanang Sumarna
-                </Text>
-                <Text style={{color: COLOR.red, fontWeight: 'bold'}}>
-                  Rp 50.000.000
-                </Text>
-                <View
-                  style={{
-                    marginTop: normalize(10),
-                    flexDirection: 'row',
-                    gap: normalize(10),
-                    alignItems: 'center',
-                  }}>
-                  <View
-                    style={{
-                      width: normalize(15),
-                      height: normalize(15),
-                      borderRadius: 20,
-                      backgroundColor: 'black',
-                    }}
-                  />
-                  <Text style={{color: 'black'}}>Black</Text>
-                </View>
-              </View>
-              <View>
-                <Text style={{color: COLOR.darkGrey}}>18-10-2024</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('CustomerDetail');
-                  }}
-                  style={{
-                    backgroundColor: COLOR.default,
-                    padding: normalize(10),
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 10,
-                    marginTop: normalize(10),
-                  }}>
-                  <Text style={{color: 'white', fontWeight: 'bold'}}>
-                    Detail
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-        {/* <ScrollView
-        horizontal={false}
-        style={{
-          marginTop: normalize(20),
-          marginBottom: normalize(70),
-          height: normalize(370),
-        }}>
-       
-      </ScrollView> */}
+          </TouchableOpacity>
+        ))}
       </ScrollView>
       <View
         style={{
@@ -488,8 +362,8 @@ export default function Customer({navigation}: any) {
             backgroundColor: COLOR.default,
             height: normalize(50),
             borderRadius: 10,
-            position: 'absolute',
-            bottom: normalize(30),
+            // position: 'absolute',
+            // bottom: normalize(10),
             justifyContent: 'center',
             alignItems: 'center',
           }}>

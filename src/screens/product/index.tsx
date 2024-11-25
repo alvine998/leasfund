@@ -57,7 +57,7 @@ export default function Product({navigation}: any) {
               AsyncStorage.setItem('walkby', 'product');
               AsyncStorage.setItem(
                 'leasing',
-                JSON.stringify({id: v?.id, name: v?.name}),
+                JSON.stringify({uuid: v?.uuid, name: v?.name, code: v?.code}),
               );
               navigation.navigate('DetailProduct');
             }}

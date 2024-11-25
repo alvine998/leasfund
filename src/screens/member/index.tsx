@@ -31,11 +31,11 @@ export default function Member({navigation}: any) {
           textAlign: 'center',
           marginTop: normalize(20),
         }}>
-        Rekan Bisnis
+        Partner Bisnis
       </Text>
       <View style={{marginTop: normalize(0)}}>
         <Input
-          placeholder={'Cari rekan  ...'}
+          placeholder={'Cari partner  ...'}
           onChange={() => {}}
           value={''}
           isRequired
@@ -53,7 +53,7 @@ export default function Member({navigation}: any) {
             fontSize: normalize(14),
             color: 'black',
           }}>
-          Jumlah Rekan Bisnis: 9
+          Jumlah Partner Bisnis: 9
         </Text>
         <TouchableOpacity
           style={{
@@ -107,7 +107,7 @@ export default function Member({navigation}: any) {
                 fontSize: normalize(14),
                 color: 'white',
               }}>
-              RB1
+              PB1
             </Text>
           </View>
           <View>

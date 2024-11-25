@@ -1,9 +1,12 @@
 import {
+  ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -28,12 +31,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LeasingModal from '../../../components/modals/LeasingModal';
 import LeasingFormModal from '../../../components/modals/LeasingFormModal';
 import TypeModal from '../../../components/modals/TypeModal';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import CoupleOccupationModal from '../../../components/modals/CoupleOccupationModal';
 
 export default function FormSubmission({navigation}: any) {
   const [payload, setPayload] = useState<any>();
+  const [user, setUser] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(false);
   const heightScreen = Dimensions.get('screen').height;
-  let steps = ['PROSPECT', 'DETAIL', 'PINJAMAN', 'DOKUMEN', 'KONFIRMASI'];
-  const [step, setStep] = useState<any>(['PROSPECT']);
+  let steps = ['PROSPEK', 'DETAIL', 'PINJAMAN', 'DOKUMEN', 'KONFIRMASI'];
+  const [step, setStep] = useState<any>(['PROSPEK']);
   const [stepIndex, setStepIndex] = useState<number>(0);
   const [modal, setModal] = useState<{open: boolean; data?: any; key?: string}>(
     {open: false, data: null, key: ''},
@@ -41,6 +48,97 @@ export default function FormSubmission({navigation}: any) {
   const [products, setProducts] = useState<any>([]);
   const [selected, setSelected] = useState<any>();
   const [walkby, setWalkby] = useState<string>('');
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB in bytes
+  const [selectImage, setSelectImage] = useState<{
+    ktp: string;
+    couple_ktp: string;
+    acte: string;
+    kk: string;
+    stnk: string;
+  }>({
+    ktp: '',
+    couple_ktp: '',
+    acte: '',
+    kk: '',
+    stnk: '',
+  });
+
+  const uploadFirebase = async (key: string, image: any) => {
+    try {
+      const formData: any = new FormData();
+      formData.append('file', {
+        uri: image,
+        name: 'image/jpg',
+        type: 'image/jpeg',
+      });
+      const result = await axios.post(
+        CONFIG.base_url_api + '/upload/image',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+      return setSelectImage({...selectImage, [key]: result?.data?.url});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const openCamera = async (key: string) => {
+    try {
+      const result: any = await launchCamera({
+        mediaType: 'photo',
+        saveToPhotos: true,
+        quality: 1,
+      });
+      if (result.errorCode) {
+        ToastAndroid.show('Error: ' + result.errorMessage, ToastAndroid.SHORT);
+      }
+      if (result?.assets) {
+        if (result?.assets[0]?.fileSize > MAX_FILE_SIZE) {
+          return ToastAndroid.show('Maks file 2 MB', ToastAndroid.SHORT);
+        }
+        return uploadFirebase(key, result?.assets[0]?.uri);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const openGallery = async (key: string) => {
+    try {
+      const result: any = await launchImageLibrary({
+        mediaType: 'photo',
+        quality: 1,
+      });
+      if (result.errorCode) {
+        ToastAndroid.show('Error: ' + result.errorMessage, ToastAndroid.SHORT);
+      }
+      if (result?.assets) {
+        if (result?.assets[0]?.fileSize > MAX_FILE_SIZE) {
+          return ToastAndroid.show('Maks file 2 MB', ToastAndroid.SHORT);
+        }
+        return uploadFirebase(key, result?.assets[0]?.uri);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChooseOption = (key: string) => {
+    Alert.alert(
+      'Select Option',
+      'Choose an option to get your image',
+      [
+        {text: 'Camera', onPress: () => openCamera(key)},
+        {text: 'Gallery', onPress: () => openGallery(key)},
+        {text: 'Cancel', style: 'cancel'},
+      ],
+      {cancelable: true},
+    );
+  };
 
   const getProduct = async () => {
     try {
@@ -53,13 +151,63 @@ export default function FormSubmission({navigation}: any) {
     }
   };
 
+  const getCustomer = async (
+    uuid: string,
+    leasing_uuid: string,
+    leasing_name: string,
+  ) => {
+    try {
+      const result = await axios.get(
+        CONFIG.base_url_api + `/customer/single/${uuid}`,
+        {
+          headers: CONFIG.headers,
+        },
+      );
+      setPayload({
+        ...result?.data,
+        leasing_uuid: leasing_uuid,
+        leasing_name: leasing_name,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     let walkby: any = '';
     const getStorage = async () => {
       walkby = await AsyncStorage.getItem('walkby');
+      let leasing: any = await AsyncStorage.getItem('leasing');
+      let vtype: any = await AsyncStorage.getItem('vType');
+      let user: any = await AsyncStorage.getItem('login');
+      let customer: any = await AsyncStorage.getItem('continue');
+      customer = JSON.parse(customer);
+      setUser(JSON.parse(user));
       setWalkby(walkby);
       if (walkby == 'prospek') {
+        if (customer) {
+          getCustomer(
+            customer?.customer_uuid,
+            customer?.leasing_uuid,
+            customer?.leasing_name,
+          );
+        }
         getProduct();
+      } else {
+        if (customer) {
+          getCustomer(
+            customer?.customer_uuid,
+            customer?.leasing_uuid,
+            customer?.leasing_name,
+          );
+        }
+        leasing = JSON.parse(leasing);
+        setPayload({
+          ...payload,
+          leasing_uuid: leasing?.uuid,
+          leasing_name: leasing?.name,
+          type_id: vtype,
+        });
       }
     };
     getStorage();
@@ -72,16 +220,18 @@ export default function FormSubmission({navigation}: any) {
     walkby == 'prospek' && {
       label: 'Leasing',
       placeholder: 'Pilih Leasing',
-      value: selected?.leasing_name,
+      value: payload?.leasing_name,
       required: true,
       select: true,
+      name: 'leasing_uuid',
     },
     walkby == 'prospek' && {
       label: 'Jenis Kendaraan',
       placeholder: 'Pilih Jenis Kendaraan',
-      value: selected?.type,
+      value: payload?.type_name,
       required: true,
       select: true,
+      name: 'type_id',
     },
     {
       label: 'Nama Lengkap Pemohon',
@@ -90,60 +240,77 @@ export default function FormSubmission({navigation}: any) {
       required: true,
       input: true,
       onChange: (e: any) => handleChange('name', e),
+      name: 'name',
     },
     {
       label: 'NIK KTP',
-      placeholder: 'NIK KTP',
+      placeholder: 'Masukkan NIK 16 digit',
       value: payload?.nik,
       required: true,
       input: true,
       isNumber: true,
       onChange: (e: any) => handleChange('nik', e),
+      name: 'nik',
     },
     {
       label: 'No Whatsapp',
-      placeholder: 'No Whatsapp',
+      placeholder: '85xxxxxxxxx',
       value: payload?.phone,
       required: true,
       input: true,
       isNumber: true,
       onChange: (e: any) => handleChange('phone', e),
+      name: 'phone',
     },
     {
       label: 'Nama Lengkap Ibu Kandung',
       placeholder: 'Nama Lengkap Ibu Kandung',
-      value: payload?.birth_place,
+      value: payload?.mother_name,
       required: true,
       input: true,
-      onChange: (e: any) => handleChange('birth_place', e),
+      onChange: (e: any) => handleChange('mother_name', e),
+      name: 'mother_name',
     },
     {
       label: 'Alamat Tinggal',
       placeholder: 'Alamat Tinggal',
-      value: selected?.address_name,
+      value: payload?.address_name,
       required: true,
       select: true,
+      name: 'address_status',
     },
     {
       label: 'Status Pernikahan',
       placeholder: 'Status Pernikahan',
-      value: selected?.marrital_name,
+      value: payload?.marriage_name,
       required: true,
       select: true,
+      name: 'marriage_status',
     },
     {
       label: 'Pekerjaan Pemohon',
       placeholder: 'Pekerjaan Pemohon',
-      value: selected?.occupation_name,
+      value: payload?.occupation_name,
       required: true,
       select: true,
+      name: 'occupation_value',
     },
     {
       label: 'Status Rumah Tinggal Sekarang',
       placeholder: 'Status Rumah Tinggal Sekarang',
-      value: selected?.housestatus_name,
+      value: payload?.housestatus_name,
       required: true,
       select: true,
+      name: 'housestatus_value',
+    },
+    {
+      label: 'Plat Nomor Kendaraan',
+      placeholder: 'Contoh: D 1234 UAH',
+      value: payload?.plat_no,
+      required: true,
+      input: true,
+      onChange: (e: any) => handleChange('plat_no', e),
+      name: 'plat_no',
     },
   ]?.filter((v: any) => v !== false);
 
@@ -189,6 +356,7 @@ export default function FormSubmission({navigation}: any) {
     {
       label: 'KTP Pemohon',
       placeholder: 'KTP Pemohon',
+      key: 'ktp',
       value: payload?.name,
       required: true,
       input: true,
@@ -196,6 +364,7 @@ export default function FormSubmission({navigation}: any) {
     selected?.marrital_value == 'married' && {
       label: 'KTP Pasangan',
       placeholder: 'KTP Pasangan',
+      key: 'couple_ktp',
       value: payload?.phone,
       required: true,
       input: true,
@@ -203,6 +372,7 @@ export default function FormSubmission({navigation}: any) {
     selected?.marrital_value == 'divorce' && {
       label: 'Akte Cerai',
       placeholder: 'Akte Cerai',
+      key: 'acte',
       value: payload?.phone,
       required: true,
       input: true,
@@ -210,6 +380,7 @@ export default function FormSubmission({navigation}: any) {
     {
       label: 'Kartu Keluarga',
       placeholder: 'Kartu Keluarga',
+      key: 'kk',
       value: payload?.phone,
       required: true,
       input: true,
@@ -217,6 +388,7 @@ export default function FormSubmission({navigation}: any) {
     {
       label: 'STNK',
       placeholder: 'STNK',
+      key: 'stnk',
       value: payload?.phone,
       required: true,
       input: true,
@@ -289,13 +461,6 @@ export default function FormSubmission({navigation}: any) {
       select: true,
     },
     {
-      label: 'Plat Nomor Kendaraan',
-      placeholder: 'Plat Nomor Kendaraan',
-      value: payload?.plat_no,
-      required: true,
-      input: true,
-    },
-    {
       label: 'Kegunaan Pengajuan',
       placeholder: 'Kegunaan Pengajuan',
       value: payload?.phone,
@@ -303,6 +468,140 @@ export default function FormSubmission({navigation}: any) {
       input: true,
     },
   ]?.filter((v: any) => v !== false);
+
+  const handleStep = async (
+    payload: any,
+    form: any[],
+    invalidData: string[],
+  ) => {};
+
+  const onSubmit = async () => {
+    setLoading(true);
+    try {
+      if (stepIndex == 0) {
+        let invalidData: string[] = [];
+        forms
+          ?.filter((val: any) => val.required == true)
+          ?.map((val: any) => {
+            if (!payload?.[val.name]) {
+              invalidData.push(val.label);
+            }
+          });
+        if (invalidData.length > 0) {
+          setLoading(false);
+          ToastAndroid.show(
+            `Parameter tidak lengkap ${invalidData}`,
+            ToastAndroid.SHORT,
+          );
+          return;
+        }
+        if (payload?.nik?.length < 16) {
+          setLoading(false);
+          ToastAndroid.show(
+            `NIK KTP terdiri dari 16 digit angka`,
+            ToastAndroid.SHORT,
+          );
+          return;
+        }
+        if (payload?.phone?.length < 10) {
+          setLoading(false);
+          ToastAndroid.show(
+            `No Whatsapp minimal 10 digit angka`,
+            ToastAndroid.SHORT,
+          );
+          return;
+        }
+        if (payload?.address_status == 'diff_ktp') {
+          if (
+            !payload?.address ||
+            !payload?.rt ||
+            !payload?.rw ||
+            !payload?.district_id
+          ) {
+            setLoading(false);
+            ToastAndroid.show(
+              `Data alamat domisili sekarang wajib diisi`,
+              ToastAndroid.SHORT,
+            );
+            return;
+          }
+        }
+        if (payload?.marriage_status == 'married') {
+          if (
+            !payload?.couple_name ||
+            !payload?.couple_phone ||
+            !payload?.couple_occupation_value
+          ) {
+            setLoading(false);
+            ToastAndroid.show(`Data pasangan wajib diisi`, ToastAndroid.SHORT);
+            return;
+          }
+        }
+        const existPlatNo = await axios.get(
+          CONFIG.base_url_api +
+            `/transaction/list?pagination=true&page=1&limit=10&plat_no=${payload?.plat_no}`,
+          {
+            headers: CONFIG.headers,
+          },
+        );
+        if (existPlatNo?.data?.items?.length > 0) {
+          setLoading(false);
+          ToastAndroid.show(
+            `Plat No Sudah terdaftar silahkan hubungi menu bantuan!`,
+            ToastAndroid.SHORT,
+          );
+          return;
+        }
+        const result = await axios.post(
+          CONFIG.base_url_api + `/customer/create`,
+          {
+            ...payload,
+            ktp_address: payload?.address_status,
+            address:
+              payload?.address_status == 'ktp'
+                ? 'ktp'
+                : `${payload?.address} RT/RW ${payload?.rt}/${payload?.rw}`,
+            occupation: payload?.occupation_value,
+            status: 1,
+          },
+          {
+            headers: CONFIG.headers,
+          },
+        );
+        if (result?.data) {
+          const createPlat = await axios.post(
+            CONFIG.base_url_api + `/transaction/create`,
+            {
+              user_uuid: user?.uuid,
+              user_name: user?.name,
+              customer_uuid: result?.data?.uuid,
+              customer_name: result?.data?.name,
+              leasing_uuid: payload?.leasing_uuid,
+              leasing_name: payload?.leasing_name,
+              plat_no: payload?.plat_no,
+            },
+            {
+              headers: CONFIG.headers,
+            },
+          );
+        }
+        const newStep = stepIndex + 1;
+        setStepIndex(newStep);
+        setStep([...step, steps[newStep]]);
+        setLoading(false);
+        return;
+      } else {
+        const newStep = stepIndex + 1;
+        setStepIndex(newStep);
+        setStep([...step, steps[newStep]]);
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
   return (
     <View style={{flex: 1, height: heightScreen}}>
       <View
@@ -373,13 +672,41 @@ export default function FormSubmission({navigation}: any) {
           elevation: 3,
           marginTop: normalize(10),
         }}>
-        {/* Prospect */}
+        {/* PROSPEK */}
         {stepIndex == 0 && (
           <View>
             <View style={{paddingHorizontal: normalize(20)}}>
               {forms?.map((v: any, i: number) => (
                 <View key={i}>
-                  {v?.input && (
+                  {v?.input && v?.name == 'phone' && (
+                    <View style={{width: '100%'}}>
+                      <Text
+                        style={{
+                          fontSize: normalize(20),
+                          color: COLOR.darkGrey,
+                          position: 'absolute',
+                          top: normalize(56),
+                          left: normalize(20),
+                        }}>
+                        +62
+                      </Text>
+                      <Input
+                        onChange={v?.onChange}
+                        placeholder={v?.placeholder}
+                        value={v?.value}
+                        isRequired={v?.required}
+                        label={v?.label}
+                        number={v?.isNumber}
+                        maxLength={13}
+                        style={{
+                          width: '100%',
+                          paddingLeft: normalize(60),
+                          fontSize: normalize(20),
+                        }}
+                      />
+                    </View>
+                  )}
+                  {v?.input && v?.name !== 'phone' && (
                     <Input
                       onChange={v?.onChange}
                       placeholder={v?.placeholder}
@@ -387,6 +714,7 @@ export default function FormSubmission({navigation}: any) {
                       isRequired={v?.required}
                       label={v?.label}
                       number={v?.isNumber}
+                      maxLength={v?.name == 'nik' ? 16 : 250}
                     />
                   )}
                   {v?.select && (
@@ -426,7 +754,7 @@ export default function FormSubmission({navigation}: any) {
                         />
                       </TouchableOpacity>
 
-                      {selected?.address_value == 'diff_ktp' &&
+                      {payload?.address_status == 'diff_ktp' &&
                       v?.label == 'Alamat Tinggal' ? (
                         <View>
                           <Text
@@ -520,7 +848,7 @@ export default function FormSubmission({navigation}: any) {
                         ''
                       )}
 
-                      {selected?.marrital_value == 'married' &&
+                      {payload?.marriage_status == 'married' &&
                       v?.label == 'Status Pernikahan' ? (
                         <View>
                           <Text
@@ -543,14 +871,18 @@ export default function FormSubmission({navigation}: any) {
                             <Input
                               placeholder={'Nama Pasangan'}
                               value={payload?.couple_name}
-                              onChange={() => {}}
+                              onChange={(e: any) => {
+                                handleChange('couple_name', e);
+                              }}
                               label="Nama Pasangan"
                               isRequired
                             />
                             <Input
                               placeholder={'No Whatsapp'}
                               value={payload?.couple_phone}
-                              onChange={() => {}}
+                              onChange={(e: any) => {
+                                handleChange('couple_phone', e);
+                              }}
                               label="No Whatsapp"
                               isRequired
                             />
@@ -583,7 +915,7 @@ export default function FormSubmission({navigation}: any) {
                                   flexDirection: 'row',
                                 }}>
                                 <Text style={{color: COLOR.darkGrey}}>
-                                  {selected?.couple_occupation_name ||
+                                  {payload?.couple_occupation_name ||
                                     'Pekerjaan Pasangan'}
                                 </Text>
                                 <FA5Icon
@@ -758,52 +1090,33 @@ export default function FormSubmission({navigation}: any) {
             <View style={{paddingHorizontal: normalize(20)}}>
               {formsDoc?.map((v: any, i: number) => (
                 <View key={i}>
-                  {v?.input && (
-                    <Input
-                      onChange={v?.onChange}
-                      placeholder={v?.placeholder}
-                      value={v?.value}
-                      isRequired={v?.required}
-                      label={v?.label}
-                      number={v?.isNumber}
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleChooseOption(v?.key);
+                    }}
+                    style={{
+                      width: '100%',
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      height: normalize(150),
+                      marginTop: normalize(20),
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <FA5Icon
+                      name={v?.icon}
+                      size={normalize(40)}
+                      color={COLOR.darkGreen}
                     />
-                  )}
-                  {v?.select && (
-                    <View style={{marginTop: normalize(20)}}>
-                      <Text
-                        style={{
-                          fontSize: normalize(18),
-                          color: 'black',
-                          marginLeft: normalize(10),
-                        }}>
-                        {v?.label}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setModal({...modal, open: true, key: v?.label});
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: normalize(10),
-                          borderRadius: 10,
-                          borderWidth: 1,
-                          paddingHorizontal: normalize(20),
-                          height: normalize(50),
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          flexDirection: 'row',
-                        }}>
-                        <Text style={{color: COLOR.darkGrey}}>
-                          {v?.value || v?.label}
-                        </Text>
-                        <FA5Icon
-                          name="chevron-down"
-                          size={normalize(20)}
-                          color={COLOR.darkGrey}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  )}
+                    <Text
+                      style={{
+                        color: COLOR.darkGrey,
+                        fontSize: normalize(16),
+                        marginTop: normalize(10),
+                      }}>
+                      {v?.label}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               ))}
             </View>
@@ -870,14 +1183,14 @@ export default function FormSubmission({navigation}: any) {
         )}
 
         {/* Modal Provider */}
-        {/* Prospect Modal */}
+        {/* PROSPEK Modal */}
         {modal.key == 'Leasing' && (
           <LeasingFormModal
             options={products}
             modal={modal}
-            selected={selected}
+            selected={payload}
             setModal={setModal}
-            setSelected={setSelected}
+            setSelected={setPayload}
           />
         )}
 
@@ -888,9 +1201,9 @@ export default function FormSubmission({navigation}: any) {
               {value: 'motor', name: 'Motor'},
             ]}
             modal={modal}
-            selected={selected}
+            selected={payload}
             setModal={setModal}
-            setSelected={setSelected}
+            setSelected={setPayload}
           />
         )}
 
@@ -901,9 +1214,9 @@ export default function FormSubmission({navigation}: any) {
               {value: 'diff_ktp', name: 'Beda KTP'},
             ]}
             modal={modal}
-            selected={selected}
+            selected={payload}
             setModal={setModal}
-            setSelected={setSelected}
+            setSelected={setPayload}
           />
         )}
 
@@ -915,9 +1228,9 @@ export default function FormSubmission({navigation}: any) {
               {value: 'divorce', name: 'Cerai'},
             ]}
             modal={modal}
-            selected={selected}
+            selected={payload}
             setModal={setModal}
-            setSelected={setSelected}
+            setSelected={setPayload}
           />
         )}
 
@@ -928,23 +1241,23 @@ export default function FormSubmission({navigation}: any) {
               {value: 'entrepreneur', name: 'Wirausaha'},
             ]}
             modal={modal}
-            selected={selected}
+            selected={payload}
             setModal={setModal}
-            setSelected={setSelected}
+            setSelected={setPayload}
           />
         )}
 
         {modal.key == 'Pekerjaan Pasangan' && (
-          <OccupationModal
+          <CoupleOccupationModal
             options={[
               {value: 'staff', name: 'Karyawan'},
               {value: 'entrepreneur', name: 'Wirausaha'},
               {value: 'housewife', name: 'Ibu Rumah Tangga'},
             ]}
             modal={modal}
-            selected={selected}
+            selected={payload}
             setModal={setModal}
-            setSelected={setSelected}
+            setSelected={setPayload}
           />
         )}
 
@@ -956,9 +1269,9 @@ export default function FormSubmission({navigation}: any) {
               {value: 'mess', name: 'Mess'},
             ]}
             modal={modal}
-            selected={selected}
+            selected={payload}
             setModal={setModal}
-            setSelected={setSelected}
+            setSelected={setPayload}
           />
         )}
 
@@ -1038,11 +1351,7 @@ export default function FormSubmission({navigation}: any) {
             marginTop: normalize(20),
           }}>
           <TouchableOpacity
-            onPress={() => {
-              const newStep = stepIndex + 1;
-              setStepIndex(newStep);
-              setStep([...step, steps[newStep]]);
-            }}
+            onPress={onSubmit}
             style={{
               backgroundColor: COLOR.darkGreen,
               height: normalize(50),
@@ -1051,9 +1360,13 @@ export default function FormSubmission({navigation}: any) {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text style={{color: 'white', fontSize: normalize(20)}}>
-              {stepIndex == 3 ? 'Ajukan Pemohon' : 'Selanjutnya'}
-            </Text>
+            {loading ? (
+              <ActivityIndicator size={'small'} color={'white'} />
+            ) : (
+              <Text style={{color: 'white', fontSize: normalize(20)}}>
+                {stepIndex == 3 ? 'Ajukan Pemohon' : 'Selanjutnya'}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
         {stepIndex !== 0 && (
@@ -1067,7 +1380,7 @@ export default function FormSubmission({navigation}: any) {
               onPress={() => {
                 const newStep = stepIndex - 1;
                 setStepIndex(newStep);
-                setStep(step?.filter((v:any) => v !== steps[newStep]));
+                setStep(step?.filter((v: any) => v !== steps[stepIndex]));
               }}
               style={{
                 backgroundColor: COLOR.red,
@@ -1077,9 +1390,13 @@ export default function FormSubmission({navigation}: any) {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text style={{color: 'white', fontSize: normalize(20)}}>
-                Sebelumnya
-              </Text>
+              {loading ? (
+                <ActivityIndicator size={'small'} color={'white'} />
+              ) : (
+                <Text style={{color: 'white', fontSize: normalize(20)}}>
+                  Sebelumnya
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         )}

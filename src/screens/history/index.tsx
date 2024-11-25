@@ -5,15 +5,24 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import normalize from 'react-native-normalize';
 import BackButton from '../../components/BackButton';
 import {COLOR} from '../../utils/color';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 import moment from 'moment';
 import Input from '../../components/Input';
+import {RefreshControl} from 'react-native';
 
 export default function History({navigation}: any) {
+  const [refresh, setRefresh] = useState<boolean>(false);
+  const onRefresh = () => {
+    setRefresh(true);
+    setTimeout(() => {
+      // getProduct();
+      setRefresh(false);
+    }, 2000);
+  };
   return (
     <View style={{padding: normalize(20)}}>
       <Text
@@ -26,22 +35,23 @@ export default function History({navigation}: any) {
         Riwayat Prospek
       </Text>
       <Input
-        onChange={(e: any)=>{}}
-        placeholder={"Cari prospek..."}
+        onChange={(e: any) => {}}
+        placeholder={'Cari prospek...'}
         value={''}
         isRequired
       />
       <ScrollView
-        style={{
-          backgroundColor: 'white',
-          elevation: 5,
-          marginTop: normalize(30),
-          borderRadius: 10,
-          padding: normalize(20),
-        }}>
+        refreshControl={
+          <RefreshControl onRefresh={onRefresh} refreshing={refresh} />
+        }>
         <View
           style={{
             width: '100%',
+            backgroundColor: 'white',
+            elevation: 5,
+            marginTop: normalize(30),
+            borderRadius: 10,
+            padding: normalize(20),
           }}>
           <View>
             <Text
@@ -121,9 +131,9 @@ export default function History({navigation}: any) {
               height: normalize(40),
               width: '100%',
               borderRadius: 10,
-              justifyContent:"center",
-              alignItems:"center",
-              marginTop: normalize(20)
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: normalize(20),
             }}>
             <Text
               style={{

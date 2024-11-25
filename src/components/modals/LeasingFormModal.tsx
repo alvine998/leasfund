@@ -59,7 +59,7 @@ export default function LeasingFormModal({
                         onPress={() => {
                             setSelected({
                                 ...selected,
-                                leasing_id: v?.id,
+                                leasing_uuid: v?.uuid,
                                 leasing_name: v?.name
                             });
                             setModal({ ...modal, open: false });

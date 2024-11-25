@@ -59,7 +59,7 @@ import {
               onPress={() => {
                 setSelected({
                   ...selected,
-                  address_value: v?.value,
+                  address_status: v?.value,
                   address_name: v?.name,
                 });
                 setModal({...modal, open: false});

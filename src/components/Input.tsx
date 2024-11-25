@@ -12,6 +12,7 @@ interface Props {
   isRequired?: boolean;
   label?: string;
   isReadOnly?: boolean;
+  maxLength?: number;
 }
 
 export default function Input({
@@ -23,6 +24,7 @@ export default function Input({
   isRequired = false,
   isReadOnly = false,
   label,
+  maxLength
 }: Props) {
   return (
     <View style={{marginTop: normalize(20)}}>
@@ -53,6 +55,7 @@ export default function Input({
             },
             style,
           ]}
+          maxLength={maxLength}
           placeholderTextColor={COLOR.darkGrey}
           onChangeText={onChange}
           keyboardType={number ? 'number-pad' : 'default'}

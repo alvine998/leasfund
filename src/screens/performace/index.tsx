@@ -37,7 +37,7 @@ export default function Performance({navigation}: any) {
             paddingVertical: normalize(20),
           }}>
           <Text style={{color: COLOR.darkGrey}}>
-            Nominal Pengajuan Dana Tunai
+            Total Insentif Saat Ini
           </Text>
           <Text
             style={{
@@ -66,7 +66,7 @@ export default function Performance({navigation}: any) {
               padding: normalize(10),
               width: '48%',
             }}>
-            <Text style={{color: COLOR.darkGrey}}>Jumlah Prospek</Text>
+            <Text style={{color: COLOR.darkGrey}}>Jumlah GoLive</Text>
             <Text
               style={{
                 color: 'black',
@@ -87,7 +87,7 @@ export default function Performance({navigation}: any) {
               width: '48%',
             }}>
             <Text style={{color: COLOR.darkGrey, textAlign: 'center'}}>
-              Jumlah Pengajuan Dana Tunai
+              Nominal Pengajuan Dana Tunai
             </Text>
             <Text
               style={{

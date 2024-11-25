@@ -195,7 +195,7 @@ export default function EditProfile({navigation}: any) {
               }}
               label="Nama"
               isReadOnly
-              style={{backgroundColor: "#dfdfdf", padding: normalize(20)}}
+              style={{backgroundColor: COLOR.gray, borderRadius: 10}}
             />
 
             <Input

@@ -20,7 +20,7 @@ import {
     setSelected: any;
   }
   
-  export default function MarritalModal({
+  export default function CoupleOccupationModal({
     options,
     modal,
     setModal,
@@ -37,7 +37,7 @@ import {
             alignItems: 'center',
           }}>
           <Text style={{color: COLOR.darkGrey, fontSize: normalize(20)}}>
-            Status Pernikahan
+            Pilih Pekerjaan
           </Text>
           <TouchableOpacity
             onPress={() => {
@@ -59,8 +59,8 @@ import {
               onPress={() => {
                 setSelected({
                   ...selected,
-                  marriage_status: v?.value,
-                  marriage_name: v?.name,
+                  couple_occupation_value: v?.value,
+                  couple_occupation_name: v?.name,
                 });
                 setModal({...modal, open: false});
               }}

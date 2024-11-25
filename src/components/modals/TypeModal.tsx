@@ -56,11 +56,11 @@ export default function TypeModal({
         }}>
         {data?.map((v: any) => (
           <TouchableOpacity
-            key={v?.id}
+            key={v?.value}
             onPress={() => {
               setSelected({
                 ...selected,
-                type_id: v?.id,
+                type_id: v?.value,
                 type_name: v?.name,
               });
               setModal({...modal, open: false});
