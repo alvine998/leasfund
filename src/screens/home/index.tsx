@@ -401,7 +401,7 @@ export default function Home({navigation}: any) {
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
-            alignItems: 'center',
+            alignItems: 'baseline',
             gap: normalize(20),
           }}>
           {navs?.map((val: any, idx: number) => (
@@ -432,7 +432,9 @@ export default function Home({navigation}: any) {
           style={{
             marginBottom: normalize(50),
           }}>
-          <TouchableOpacity style={styles.boxCard2}>
+          <TouchableOpacity style={styles.boxCard2} onPress={()=>{
+            navigation.navigate("FAQ")
+          }}>
             <FA5Icon
               name={'hands-helping'}
               size={normalize(20)}

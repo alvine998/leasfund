@@ -22,6 +22,7 @@ import History from './src/screens/history';
 import Commision from './src/screens/commision';
 import Performance from './src/screens/performace';
 import CustomerDetail from './src/screens/customer/detail';
+import FAQ from './src/screens/faq';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,7 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{headerShown: false}}>
+        <Stack.Screen name="FAQ" component={FAQ} />
         <Stack.Screen name="CustomerDetail" component={CustomerDetail} />
         <Stack.Screen name="Performance" component={Performance} />
         <Stack.Screen name="Commision" component={Commision} />
