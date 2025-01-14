@@ -27,6 +27,7 @@ export default function DetailProduct({navigation}: any) {
         <TouchableOpacity
           onPress={() => {
             AsyncStorage.setItem('vType', 'car');
+            AsyncStorage.setItem('continue', '');
             navigation.navigate('FormSubmission');
           }}
           style={{
@@ -46,6 +47,7 @@ export default function DetailProduct({navigation}: any) {
         <TouchableOpacity
           onPress={() => {
             AsyncStorage.setItem('vType', 'motor');
+            AsyncStorage.setItem('continue', '');
             navigation.navigate('FormSubmission');
           }}
           style={{

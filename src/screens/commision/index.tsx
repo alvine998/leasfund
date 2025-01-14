@@ -12,11 +12,11 @@ export default function Commision({ navigation }: any) {
             <View style={{ flexDirection: "row", gap: normalize(20), marginTop: normalize(20), justifyContent: "center", alignItems: "center" }}>
                 <TouchableOpacity style={{ backgroundColor: COLOR.blue, padding: normalize(10), borderRadius: 10, width: "45%" }}>
                     <Text style={{ color: "white", textAlign: "center", fontSize: normalize(24) }}>Poin</Text>
-                    <Text style={{ color: "white", textAlign: "center", fontSize: normalize(20), fontWeight: "bold" }}>50</Text>
+                    <Text style={{ color: "white", textAlign: "center", fontSize: normalize(20), fontWeight: "bold" }}>0</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={{ backgroundColor: COLOR.default, padding: normalize(10), borderRadius: 10, width: "45%" }}>
                     <Text style={{ color: "white", textAlign: "center", fontSize: normalize(24) }}>Komisi</Text>
-                    <Text style={{ color: "white", textAlign: "center", fontSize: normalize(20), fontWeight: "bold" }}>Rp 5.000.000</Text>
+                    <Text style={{ color: "white", textAlign: "center", fontSize: normalize(20), fontWeight: "bold" }}>Rp 0</Text>
                 </TouchableOpacity>
             </View>
 

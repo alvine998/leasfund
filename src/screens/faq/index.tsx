@@ -106,9 +106,8 @@ yang dibutuhkan${'\n'}4. Team sales follow up aplikasi${'\n'}5. Verifikasi leasi
                 }}>
                 <Text
                   style={{
-                    fontSize: normalize(18),
+                    fontSize: normalize(14),
                     color: 'black',
-                    textAlign: 'justify',
                     lineHeight: 20
                   }}>
                   {v?.answer}

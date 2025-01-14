@@ -560,7 +560,7 @@ export default function FormSubmission({navigation}: any) {
             address:
               payload?.address_status == 'ktp'
                 ? 'ktp'
-                : `${payload?.address} RT/RW ${payload?.rt}/${payload?.rw}`,
+                : `${payload?.address} RT/RW ${payload?.rt}/${payload?.rw}, ${payload?.geolocation} `,
             occupation: payload?.occupation_value,
             status: 1,
           },
@@ -788,18 +788,20 @@ export default function FormSubmission({navigation}: any) {
                               <View style={{width: '49%'}}>
                                 <Input
                                   placeholder={'RT'}
-                                  value={payload?.address}
+                                  value={payload?.rt}
                                   onChange={(e: any) => handleChange('rt', e)}
                                   label="RT"
+                                  number
                                   isRequired
                                 />
                               </View>
                               <View style={{width: '49%'}}>
                                 <Input
                                   placeholder={'RW'}
-                                  value={payload?.address}
+                                  value={payload?.rw}
                                   onChange={(e: any) => handleChange('rw', e)}
                                   label="RW"
+                                  number
                                   isRequired
                                 />
                               </View>
@@ -810,8 +812,9 @@ export default function FormSubmission({navigation}: any) {
                                   fontSize: normalize(18),
                                   color: 'black',
                                   marginLeft: normalize(10),
+                                  fontWeight:"bold"
                                 }}>
-                                Kecamatan
+                                Wilayah
                               </Text>
                               <TouchableOpacity
                                 onPress={() => {
@@ -832,8 +835,8 @@ export default function FormSubmission({navigation}: any) {
                                   alignItems: 'center',
                                   flexDirection: 'row',
                                 }}>
-                                <Text style={{color: COLOR.darkGrey}}>
-                                  {selected?.district_name || 'kecamatan'}
+                                <Text style={{color: COLOR.darkGrey, fontSize: normalize(12), width: normalize(250)}}>
+                                  {payload?.geolocation || 'Pilih Wilayah'}
                                 </Text>
                                 <FA5Icon
                                   name="chevron-down"
@@ -1279,9 +1282,9 @@ export default function FormSubmission({navigation}: any) {
         {(modal.key == 'Alamat Sekarang' || modal.key == 'Kecamatan') && (
           <DistrictModal
             modal={modal}
-            selected={selected}
+            selected={payload}
             setModal={setModal}
-            setSelected={setSelected}
+            setSelected={setPayload}
           />
         )}
 

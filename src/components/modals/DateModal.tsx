@@ -132,6 +132,29 @@ export default function DateModal({
           horizontal
         />
       </View>
+
+      <View style={{marginTop: normalize(40), width: '100%'}}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: COLOR.default,
+            borderRadius: 10,
+            padding: normalize(10),
+            alignItems: 'center',
+          }}
+          onPress={() => {
+            setSelected({start: startDate, end: endDate});
+            setModal({...modal, open: false});
+          }}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: normalize(20),
+              fontWeight: 'bold',
+            }}>
+            Simpan
+          </Text>
+        </TouchableOpacity>
+      </View>
     </Modals>
   );
 }

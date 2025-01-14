@@ -101,7 +101,10 @@ export default function Home({navigation}: any) {
     if (result?.data?.items[0] == '') {
       setModal(true);
     }
-    await AsyncStorage.setItem('login', JSON.stringify(result?.data?.items?.[0]))
+    await AsyncStorage.setItem(
+      'login',
+      JSON.stringify(result?.data?.items?.[0]),
+    );
   };
   const [backPressCount, setBackPressCount] = useState<number>(0);
 
@@ -432,9 +435,11 @@ export default function Home({navigation}: any) {
           style={{
             marginBottom: normalize(50),
           }}>
-          <TouchableOpacity style={styles.boxCard2} onPress={()=>{
-            navigation.navigate("FAQ")
-          }}>
+          <TouchableOpacity
+            style={styles.boxCard2}
+            onPress={() => {
+              navigation.navigate('FAQ');
+            }}>
             <FA5Icon
               name={'hands-helping'}
               size={normalize(20)}

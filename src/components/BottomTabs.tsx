@@ -23,6 +23,7 @@ export default function BottomTabs({navigation}: any) {
       }}
       onPress={() => {
         AsyncStorage.setItem('walkby', 'prospek');
+        AsyncStorage.setItem('continue', '');
         navigation.navigate('FormSubmission');
       }}>
       <View

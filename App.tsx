@@ -1,5 +1,5 @@
-import {View, Text} from 'react-native';
-import React from 'react';
+import {View, Text, ActivityIndicator} from 'react-native';
+import React, {Suspense} from 'react';
 import Splash from './src/screens/splash';
 import Intro from './src/screens/intro';
 import Home from './src/screens/home';
@@ -28,31 +28,33 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Splash"
-        screenOptions={{headerShown: false}}>
-        <Stack.Screen name="FAQ" component={FAQ} />
-        <Stack.Screen name="CustomerDetail" component={CustomerDetail} />
-        <Stack.Screen name="Performance" component={Performance} />
-        <Stack.Screen name="Commision" component={Commision} />
-        <Stack.Screen name="History" component={History} />
-        <Stack.Screen name="Member" component={Member} />
-        <Stack.Screen name="AboutUs" component={AboutUs} />
-        <Stack.Screen name="Term" component={Term} />
-        <Stack.Screen name="Privacy" component={Privacy} />
-        <Stack.Screen name="Customer" component={Customer} />
-        <Stack.Screen name="EditProfile" component={EditProfile} />
-        <Stack.Screen name="Simulation" component={Simulation} />
-        <Stack.Screen name="FormSubmission" component={FormSubmission} />
-        <Stack.Screen name="Card" component={Card} />
-        <Stack.Screen name="DetailProduct" component={DetailProduct} />
-        <Stack.Screen name="Home" component={BottomTabs} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="ConfirmOTP" component={ConfirmOTP} />
-        <Stack.Screen name="Intro" component={Intro} />
-        <Stack.Screen name="Splash" component={Splash} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Suspense fallback={<ActivityIndicator size={'large'} color="#0000ff" />}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Splash"
+          screenOptions={{headerShown: false}}>
+          <Stack.Screen name="FAQ" component={FAQ} />
+          <Stack.Screen name="CustomerDetail" component={CustomerDetail} />
+          <Stack.Screen name="Performance" component={Performance} />
+          <Stack.Screen name="Commision" component={Commision} />
+          <Stack.Screen name="History" component={History} />
+          <Stack.Screen name="Member" component={Member} />
+          <Stack.Screen name="AboutUs" component={AboutUs} />
+          <Stack.Screen name="Term" component={Term} />
+          <Stack.Screen name="Privacy" component={Privacy} />
+          <Stack.Screen name="Customer" component={Customer} />
+          <Stack.Screen name="EditProfile" component={EditProfile} />
+          <Stack.Screen name="Simulation" component={Simulation} />
+          <Stack.Screen name="FormSubmission" component={FormSubmission} />
+          <Stack.Screen name="Card" component={Card} />
+          <Stack.Screen name="DetailProduct" component={DetailProduct} />
+          <Stack.Screen name="Home" component={BottomTabs} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="ConfirmOTP" component={ConfirmOTP} />
+          <Stack.Screen name="Intro" component={Intro} />
+          <Stack.Screen name="Splash" component={Splash} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Suspense>
   );
 }

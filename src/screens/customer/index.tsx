@@ -22,18 +22,25 @@ import {CONFIG} from '../../config';
 
 export default function Customer({navigation}: any) {
   const screenWidth = Dimensions.get('screen').width;
-  const [selected, setSelected] = useState<string>('all');
-  const [date, setDate] = useState<{start: string; end: string}>({
-    start: moment().subtract(1, 'M').format('DD-MM-YYYY'),
-    end: moment().format('DD-MM-YYYY'),
+  const [selected, setSelected] = useState<string>('');
+  const [date, setDate] = useState<{start: Date; end: Date}>({
+    start: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    end: new Date(),
   });
   const [customers, setCustomers] = useState<any>([]);
+  const [search, setSearch] = useState<string>('');
   const getData = async () => {
     try {
       const user: any = await AsyncStorage.getItem('login');
       const result = await axios.get(
         CONFIG.base_url_api +
-          `/transaction/list?user_uuid=${JSON.parse(user)?.uuid}`,
+          `/transaction/list?user_uuid=${JSON.parse(user)?.uuid}&status=${
+            selected == 'all' ? '' : selected
+          }&date_start=${moment(date?.start)?.format(
+            'YYYY-MM-DD',
+          )}&date_end=${moment(date?.end)?.format(
+            'YYYY-MM-DD',
+          )}&search=${search}`,
         {
           headers: CONFIG.headers,
         },
@@ -45,35 +52,42 @@ export default function Customer({navigation}: any) {
   };
   useEffect(() => {
     getData();
-  }, []);
+  }, [selected, date, search]);
   const [modal, setModal] = useState<{open: boolean; data?: any; key?: string}>(
     {open: false, data: null, key: ''},
   );
   const data = [
     {
-      name: 'Proses',
-      population: 0,
+      name: 'Menunggu',
+      population: customers?.filter((val: any) => val?.status == 1)?.length,
       color: COLOR.yellow,
       legendFontColor: '#7F7F7F',
       legendFontSize: 15,
     },
     {
+      name: 'Proses',
+      population: customers?.filter((val: any) => val?.status == 2)?.length,
+      color: COLOR.blue,
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 15,
+    },
+    {
       name: 'Pencairan',
-      population: 0,
+      population: customers?.filter((val: any) => val?.status == 3)?.length,
       color: COLOR.default,
       legendFontColor: '#7F7F7F',
       legendFontSize: 15,
     },
     {
       name: 'Ditolak',
-      population: 0,
+      population: customers?.filter((val: any) => val?.status == 4)?.length,
       color: COLOR.red,
       legendFontColor: '#7F7F7F',
       legendFontSize: 15,
     },
     {
       name: 'Dibatalkan',
-      population: 0,
+      population: customers?.filter((val: any) => val?.status == 5)?.length,
       color: COLOR.darkGrey,
       legendFontColor: '#7F7F7F',
       legendFontSize: 15,
@@ -91,12 +105,12 @@ export default function Customer({navigation}: any) {
   };
 
   const filters = [
-    {value: 'all', label: 'Semua'},
-    {value: 'waiting', label: 'Menunggu'},
-    {value: 'processed', label: 'Proses'},
-    {value: 'disbursement', label: 'Pencairan'},
-    {value: 'rejected', label: 'Ditolak'},
-    {value: 'cancelled', label: 'Dibatalkan'},
+    {value: '', label: 'Semua'},
+    {value: '1', label: 'Menunggu'},
+    {value: '2', label: 'Proses'},
+    {value: '3', label: 'Pencairan'},
+    {value: '4', label: 'Ditolak'},
+    {value: '5', label: 'Dibatalkan'},
   ];
 
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -148,7 +162,7 @@ export default function Customer({navigation}: any) {
                 fontSize: normalize(12),
                 fontWeight: 'bold',
               }}>
-              {moment().subtract('M', 1).format('DD-MM-YYYY')}
+              {moment(date?.start)?.format('DD-MM-YYYY')}
             </Text>
             <Text
               style={{
@@ -156,7 +170,7 @@ export default function Customer({navigation}: any) {
                 fontSize: normalize(12),
                 fontWeight: 'bold',
               }}>
-              - {moment().format('DD-MM-YYYY')}
+              - {moment(date?.end)?.format('DD-MM-YYYY')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -185,8 +199,10 @@ export default function Customer({navigation}: any) {
         <View style={{marginTop: normalize(-20)}}>
           <Input
             placeholder={'Cari nasabah...'}
-            onChange={() => {}}
-            value={''}
+            onChange={(e: any) => {
+              setSearch(e);
+            }}
+            value={search}
             isRequired
           />
         </View>
@@ -218,134 +234,148 @@ export default function Customer({navigation}: any) {
             </TouchableOpacity>
           ))}
         </ScrollView>
-        {customers?.map((val: any, idx: number) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => {
-              if (val?.status == 1) {
-                AsyncStorage.setItem(
-                  'continue',
-                  JSON.stringify({
-                    customer_uuid: val?.customer_uuid,
-                    customer_name: val?.customer_name,
-                    leasing_uuid: val?.leasing_uuid,
-                    leasing_name: val?.leasing_name,
-                  }),
-                );
-                navigation.navigate('FormSubmission');
-              }
-            }}
-            style={{paddingBottom: normalize(50)}}>
-            <View
-              style={{
-                width: '100%',
-                backgroundColor: 'white',
-                elevation: 5,
-                marginTop: normalize(10),
-                borderRadius: 10,
-                paddingBottom: normalize(20),
-              }}>
-              <View
-                style={{
-                  borderBottomWidth: 2,
-                  marginTop: normalize(10),
-                  borderBottomColor: COLOR.gray,
-                  paddingBottom: normalize(10),
-                  paddingHorizontal: normalize(20),
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}>
-                {val?.status !== 1 && (
-                  <View>
-                    <View
-                      style={{
-                        padding: normalize(10),
-                        backgroundColor: COLOR.yellow,
-                        borderRadius: 20,
-                        width: normalize(100),
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Text style={{color: 'black', fontWeight: 'bold'}}>
-                        {val?.status !== 1 ? 'Menunggu' : 'Processed'}
+        {customers?.length > 0 ? (
+          <View>
+            {customers?.map((val: any, idx: number) => (
+              <TouchableOpacity
+                key={idx}
+                onPress={() => {
+                  if (val?.status == 1) {
+                    AsyncStorage.setItem(
+                      'continue',
+                      JSON.stringify({
+                        customer_uuid: val?.customer_uuid,
+                        customer_name: val?.customer_name,
+                        leasing_uuid: val?.leasing_uuid,
+                        leasing_name: val?.leasing_name,
+                      }),
+                    );
+                    navigation.navigate('FormSubmission');
+                  }
+                }}
+                style={{paddingBottom: normalize(50)}}>
+                <View
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'white',
+                    elevation: 5,
+                    marginTop: normalize(10),
+                    borderRadius: 10,
+                    paddingBottom: normalize(20),
+                  }}>
+                  <View
+                    style={{
+                      borderBottomWidth: 2,
+                      marginTop: normalize(10),
+                      borderBottomColor: COLOR.gray,
+                      paddingBottom: normalize(10),
+                      paddingHorizontal: normalize(20),
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                    }}>
+                    {val?.status !== 1 && (
+                      <View>
+                        <View
+                          style={{
+                            padding: normalize(10),
+                            backgroundColor: COLOR.yellow,
+                            borderRadius: 20,
+                            width: normalize(100),
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}>
+                          <Text style={{color: 'black', fontWeight: 'bold'}}>
+                            {val?.status !== 1 ? 'Menunggu' : 'Processed'}
+                          </Text>
+                        </View>
+                        <View>
+                          <FA5Icon
+                            name="car"
+                            color={'black'}
+                            size={normalize(30)}
+                          />
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
+                      justifyContent: 'space-between',
+                      padding: normalize(10),
+                      paddingHorizontal: normalize(20),
+                    }}>
+                    <View>
+                      <Text
+                        style={{
+                          color: COLOR.darkGrey,
+                          fontSize: normalize(20),
+                        }}>
+                        {val?.customer_name}
                       </Text>
+                      <Text style={{color: COLOR.red, fontWeight: 'bold'}}>
+                        {val?.loan_amount || '-'}
+                      </Text>
+                      {val?.status !== 1 && (
+                        <View
+                          style={{
+                            marginTop: normalize(10),
+                            flexDirection: 'row',
+                            gap: normalize(10),
+                            alignItems: 'center',
+                          }}>
+                          <View
+                            style={{
+                              width: normalize(15),
+                              height: normalize(15),
+                              borderRadius: 20,
+                              backgroundColor: COLOR.yellow,
+                            }}
+                          />
+                          <Text style={{color: 'black'}}>Yellow</Text>
+                        </View>
+                      )}
                     </View>
                     <View>
-                      <FA5Icon
-                        name="car"
-                        color={'black'}
-                        size={normalize(30)}
-                      />
+                      <Text style={{color: COLOR.darkGrey}}>
+                        {moment(val?.created_at).format('DD-MM-YYYY')}
+                      </Text>
+                      {val?.status == 1 ? (
+                        <View />
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => {
+                            navigation.navigate('CustomerDetail');
+                          }}
+                          style={{
+                            backgroundColor: COLOR.default,
+                            padding: normalize(10),
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderRadius: 10,
+                            marginTop: normalize(10),
+                          }}>
+                          <Text style={{color: 'white', fontWeight: 'bold'}}>
+                            Detail
+                          </Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   </View>
-                )}
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'flex-start',
-                  justifyContent: 'space-between',
-                  padding: normalize(10),
-                  paddingHorizontal: normalize(20),
-                }}>
-                <View>
-                  <Text
-                    style={{color: COLOR.darkGrey, fontSize: normalize(20)}}>
-                    {val?.customer_name}
-                  </Text>
-                  <Text style={{color: COLOR.red, fontWeight: 'bold'}}>
-                    {val?.loan_amount || '-'}
-                  </Text>
-                  {val?.status !== 1 && (
-                    <View
-                      style={{
-                        marginTop: normalize(10),
-                        flexDirection: 'row',
-                        gap: normalize(10),
-                        alignItems: 'center',
-                      }}>
-                      <View
-                        style={{
-                          width: normalize(15),
-                          height: normalize(15),
-                          borderRadius: 20,
-                          backgroundColor: COLOR.yellow,
-                        }}
-                      />
-                      <Text style={{color: 'black'}}>Yellow</Text>
-                    </View>
-                  )}
                 </View>
-                <View>
-                  <Text style={{color: COLOR.darkGrey}}>
-                    {moment(val?.created_at).format('DD-MM-YYYY')}
-                  </Text>
-                  {val?.status == 1 ? (
-                    <View />
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate('CustomerDetail');
-                      }}
-                      style={{
-                        backgroundColor: COLOR.default,
-                        padding: normalize(10),
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 10,
-                        marginTop: normalize(10),
-                      }}>
-                      <Text style={{color: 'white', fontWeight: 'bold'}}>
-                        Detail
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : (
+          <View style={{paddingVertical: normalize(20)}}>
+            <Text style={{color: 'black', textAlign: 'center'}}>
+              Belum ada data prospek{' '}
+              {filters?.find((v: any) => v?.value == selected)?.label}
+            </Text>
+          </View>
+        )}
       </ScrollView>
       <View
         style={{
@@ -355,6 +385,7 @@ export default function Customer({navigation}: any) {
         <TouchableOpacity
           onPress={() => {
             AsyncStorage.setItem('walkby', 'prospek');
+            AsyncStorage.setItem('continue', '');
             navigation.navigate('Product');
           }}
           style={{
