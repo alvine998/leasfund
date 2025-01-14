@@ -5,8 +5,8 @@ workflows:
       vars:
         NODE_VERSION: 19.6.0 # Specify your Node.js version
         REACT_NATIVE_VERSION: 0.75.3 # Optional: React Native version for reference
-      xcode: 14.2 # Specify Xcode version for iOS builds
-      cocoapods: 1.12.0 # Specify CocoaPods version
+      # xcode: 14.2 # Specify Xcode version for iOS builds
+      # cocoapods: 1.12.0 # Specify CocoaPods version
       flutter: stable # Required for Detox testing with Flutter dependencies
     scripts:
       - name: Install dependencies
@@ -26,20 +26,20 @@ workflows:
           ./gradlew assembleRelease
           cd ..
 
-      - name: Build iOS
-        script: |
-          echo "Building iOS app..."
-          cd ios
-          pod install
-          xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphoneos -configuration Release archive -archivePath $PWD/build/YourApp.xcarchive
-          xcodebuild -exportArchive -archivePath $PWD/build/YourApp.xcarchive -exportOptionsPlist $PWD/exportOptions.plist -exportPath $PWD/build
-          cd ..
+      # - name: Build iOS
+      #   script: |
+      #     echo "Building iOS app..."
+      #     cd ios
+      #     pod install
+      #     xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphoneos -configuration Release archive -archivePath $PWD/build/YourApp.xcarchive
+      #     xcodebuild -exportArchive -archivePath $PWD/build/YourApp.xcarchive -exportOptionsPlist $PWD/exportOptions.plist -exportPath $PWD/build
+      #     cd ..
 
     artifacts:
       - android/app/build/outputs/apk/release/app-release.apk
-      - ios/build/*.ipa
+      # - ios/build/*.ipa
 
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - alvinecom2018@gmail.com
