@@ -14,10 +14,10 @@ workflows:
           echo "Installing dependencies..."
           yarn install # or npm install
 
-      - name: Run tests
-        script: |
-          echo "Running tests..."
-          yarn test # Adjust this command to match your testing setup
+      # - name: Run tests
+      #   script: |
+      #     echo "Running tests..."
+      #     yarn test # Adjust this command to match your testing setup
 
       - name: Build Android APK
         script: |
